@@ -164,6 +164,15 @@ function render(data) {
   setText("#main-message", specialMessage(data));
 
   setText("#adjusted-avg", formatAverage(derived.adjusted_avg));
+  // 特例打率は「不足分を全打席凡退」で計算するため、通算打率より低く見える。
+  // その理由を数字の直下で補足する（規定到達後は不足0なので注記を隠す）。
+  const adjustedNote = $("#adjusted-note");
+  if (derived.remaining_pa > 0) {
+    adjustedNote.hidden = false;
+    adjustedNote.textContent = `不足${derived.remaining_pa}打席をすべて凡退扱いした場合`;
+  } else {
+    adjustedNote.hidden = true;
+  }
   if (derived.adjusted_gap <= 0) {
     setText("#adjusted-state", "特例首位打者圏内");
     setText("#adjusted-gap", `+${formatGap(derived.adjusted_gap)}`);
