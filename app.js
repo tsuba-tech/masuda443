@@ -50,6 +50,11 @@ function withHonorific(name) {
   return /選手$/.test(name) ? name : `${name} 選手`;
 }
 
+function compactHonorific(name) {
+  const compactName = name.replace(/\s+/g, "");
+  return /選手$/.test(compactName) ? compactName : `${compactName}選手`;
+}
+
 function formLabel(avg) {
   if (!Number.isFinite(avg)) return { label: "データなし", className: "form-neutral" };
   if (avg >= 0.400) return { label: "絶好調", className: "form-god" };
@@ -222,7 +227,7 @@ function renderRace(data) {
   paceLeader.append(compareRow(`最終想定（残り約${projection.paceProjectedAB}打数）`, formatAverage(projection.paceLeaderAvg), true));
   paceCard.append(paceLeader, compareMasudaBlock(projection.paceNeed, projection.projectedAB));
   const leaderTeam = leader.team || "所属球団";
-  paceCard.append(el("p", "compare-note", `※予測ではなく、${withHonorific(leader.name)}が${leaderTeam}の残り${projection.paceRemainingGames}試合を、直近5試合の打撃ペースで消化した場合の仮定です。`));
+  paceCard.append(el("p", "compare-note", `※予測ではなく、${compactHonorific(leader.name)}について${leaderTeam}の残り${projection.paceRemainingGames}試合を、直近5試合の打撃ペースで延長した仮定シナリオです。`));
 
   container.append(currentCard, paceCard);
 }
@@ -296,12 +301,10 @@ function render(data) {
   // これを混同すると「更新済みなのに今日の試合が無い」と誤解される。
   const sourceModified = data.source?.last_modified ? new Date(data.source.last_modified) : null;
   const sourceLabel = sourceModified ? formatTimestamp(sourceModified) : "取得元の更新時刻は不明";
-  setText("#source-updated-at", sourceLabel);
   setText("#source-updated-at-foot", sourceLabel);
 
   const updated = new Date(data.updated);
   setText("#updated-at", formatTimestamp(updated));
-  setText("#updated-at-top", formatTimestamp(updated));
   renderQuickSim(masuda);
   renderRace(data);
 }

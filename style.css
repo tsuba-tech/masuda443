@@ -70,8 +70,8 @@ button, summary, a { -webkit-tap-highlight-color: transparent; }
   font-size: 1.25rem;
   font-weight: 700;
 }
-.brand strong { display: block; font-size: 1rem; line-height: 1.3; letter-spacing: .03em; }
-.brand small { display: block; margin-top: .05rem; color: var(--ink-subtle); font-size: .75rem; line-height: 1.4; }
+.brand strong { display: block; font-size: 1rem; line-height: 1.3; letter-spacing: .03em; white-space: nowrap; }
+.brand small { display: block; margin-top: .05rem; color: var(--ink-subtle); font-size: .75rem; line-height: 1.4; white-space: nowrap; }
 .header-status {
   display: inline-flex;
   align-items: center;
@@ -88,12 +88,6 @@ button, summary, a { -webkit-tap-highlight-color: transparent; }
 .status-dot { width: .5rem; height: .5rem; border-radius: 50%; background: currentColor; }
 
 main { width: min(100% - 2rem, var(--max-width)); margin: 1rem auto 0; }
-.data-meta { display: flex; flex-direction: column; align-items: flex-end; gap: .25rem; margin: 0 0 1rem; color: var(--ink-subtle); font-size: .75rem; }
-.data-meta p { display: flex; flex-wrap: wrap; gap: .3rem .55rem; margin: 0; }
-.data-meta time, .data-meta strong { color: var(--ink); font-weight: 700; }
-.data-meta small { color: var(--ink-subtle); font-size: .68rem; }
-/* 大きな数字の鮮度を誤解されないための注記なので、目立ちすぎない範囲で必ず読ませる */
-.data-meta-note { max-width: 34rem; color: var(--ink-subtle); font-size: .7rem; line-height: 1.5; text-align: right; }
 .scoreboard {
   display: grid;
   gap: 1.5rem;
@@ -276,6 +270,15 @@ body.mode-hot { --status: #197a33; --status-bg: #edf7f0; }
 body.mode-normal { --status: var(--blue-1000); --status-bg: var(--blue-50); }
 body.mode-cold { --status: #4b5563; --status-bg: #f1f2f3; }
 
+@media (max-width: 47.999rem) {
+  .site-header { min-height: 3.75rem; padding: .6rem 1rem; }
+  .brand { gap: .6rem; }
+  .brand-mark { width: 2.2rem; height: 2.2rem; font-size: 1rem; }
+  .brand small { display: none; }
+  .header-status { flex: none; padding: .35rem .65rem; font-size: .75rem; white-space: nowrap; box-shadow: none; }
+  main { margin-top: .75rem; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; }
 }
@@ -309,4 +312,3 @@ body.mode-cold { --status: #4b5563; --status-bg: #f1f2f3; }
 }
 
 .race-link { display: block; margin-top: .85rem; font-size: .8rem; }
-
