@@ -158,6 +158,14 @@ h1 span { display: block; color: var(--blue-1000); }
 .progress-meta strong { color: var(--ink); }
 .regulation-note { margin: .9rem 0 0; color: var(--ink-subtle); font-size: .75rem; line-height: 1.6; }
 
+.qualification-outlook { margin-top: .75rem; padding: 1rem; border: 1px solid var(--border); background: var(--surface); }
+.outlook-heading { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .75rem 1.5rem; }
+.outlook-heading h2 { margin: 0; font-size: 1rem; }
+.outlook-heading p { margin: .3rem 0 0; font-size: .8rem; color: var(--ink-subtle); }
+.outlook-heading > strong { color: var(--blue-1000); font-size: 1.8rem; white-space: nowrap; }
+.qualification-outlook details { margin-top: .75rem; font-size: .84rem; line-height: 1.7; }
+.qualification-outlook summary { cursor: pointer; color: var(--blue-1000); }
+.qualification-outlook details p { margin-bottom: 0; }
 .pace-summary { display: grid; gap: .75rem; margin: 1rem 0 0; }
 .pace-summary article { padding: .8rem 1rem; border: 1px solid var(--border); background: var(--surface); }
 .pace-summary span { color: var(--blue-1000); font-size: .72rem; font-weight: 700; }

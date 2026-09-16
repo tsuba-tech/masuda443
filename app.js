@@ -232,6 +232,45 @@ function renderRace(data) {
   container.append(currentCard, paceCard);
 }
 
+// 今季のチーム1試合あたり打席数を一定とするポアソンモデル。
+// 上側確率を直接合計し、小さな確率での桁落ちを避ける。
+function qualificationOutlook(data) {
+  const pa = data.masuda?.pa;
+  const target = data.target_pa;
+  const played = data.team?.games_played;
+  const remaining = data.team?.remaining_games;
+  if (![pa, target, played, remaining].every(Number.isInteger)
+      || pa < 0 || target <= 0 || played <= 0 || remaining < 0) return null;
+  const needed = Math.max(0, target - pa);
+  const average = pa / played;
+  const mean = average * remaining;
+  if (!needed) return { probability: 1, average, mean, reached: true };
+  if (!mean) return { probability: 0, average, mean, reached: false };
+  let logProbability = -mean;
+  let probability = 0;
+  const limit = Math.ceil(Math.max(needed, mean) + 12 * Math.sqrt(mean) + 100);
+  for (let k = 0; k <= limit; k += 1) {
+    if (k >= needed) probability += Math.exp(logProbability);
+    logProbability += Math.log(mean) - Math.log(k + 1);
+  }
+  return { probability: Math.min(1, probability), average, mean, reached: false };
+}
+
+function renderQualificationOutlook(data) {
+  const result = qualificationOutlook(data);
+  if (!result) {
+    setText("#qualification-chance", "算出できません");
+    setText("#qualification-conditions", "打席数・チーム消化試合数・残り試合数がそろうと表示します。");
+    return;
+  }
+  const percent = result.probability * 100;
+  const label = result.reached ? "到達済み"
+    : data.team.remaining_games === 0 ? "シーズン終了・未到達"
+    : percent < 1 ? "1％未満" : percent > 99 ? "99％超" : `約${Math.round(percent)}％`;
+  setText("#qualification-chance", label);
+  setText("#qualification-conditions", `今季${data.masuda.pa}打席 ÷ チーム${data.team.games_played}試合 = 1試合平均${result.average.toFixed(2)}打席（欠場込み）。残り${data.team.remaining_games}試合で平均${result.mean.toFixed(1)}打席を積み上げると仮定し、合計${data.target_pa}打席に届く割合をポアソン分布で計算しています。今後も同じペースが続き、各試合の打席数は独立に変動する簡易モデルです。直近の起用・けが・打順変更は反映しておらず、実際の到達確率を保証するものではありません。`);
+}
+
 function render(data) {
   currentData = data;
   const { masuda, leader, recent, derived, target_pa: target } = data;
@@ -306,6 +345,7 @@ function render(data) {
   const updated = new Date(data.updated);
   setText("#updated-at", formatTimestamp(updated));
   renderQuickSim(masuda);
+  renderQualificationOutlook(data);
   renderRace(data);
 }
 
