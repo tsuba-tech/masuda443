@@ -221,7 +221,8 @@ function renderRace(data) {
   paceLeader.append(compareRow("直近5試合", formatAverage(leader.recent5_avg)));
   paceLeader.append(compareRow(`最終想定（残り約${projection.paceProjectedAB}打数）`, formatAverage(projection.paceLeaderAvg), true));
   paceCard.append(paceLeader, compareMasudaBlock(projection.paceNeed, projection.projectedAB));
-  paceCard.append(el("p", "compare-note", `※予測ではなく、直近5試合の打撃ペースをそのまま延長した仮定シナリオです。残り${projection.paceRemainingGames}試合分を延長しています。`));
+  const leaderTeam = leader.team || "所属球団";
+  paceCard.append(el("p", "compare-note", `※予測ではなく、${withHonorific(leader.name)}が${leaderTeam}の残り${projection.paceRemainingGames}試合を、直近5試合の打撃ペースで消化した場合の仮定です。`));
 
   container.append(currentCard, paceCard);
 }
