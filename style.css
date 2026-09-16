@@ -91,6 +91,9 @@ main { width: min(100% - 2rem, var(--max-width)); margin: 1rem auto 0; }
 .data-meta { display: flex; flex-direction: column; align-items: flex-end; gap: .25rem; margin: 0 0 1rem; color: var(--ink-subtle); font-size: .75rem; }
 .data-meta p { display: flex; flex-wrap: wrap; gap: .3rem .55rem; margin: 0; }
 .data-meta time, .data-meta strong { color: var(--ink); font-weight: 700; }
+.data-meta small { color: var(--ink-subtle); font-size: .68rem; }
+/* 大きな数字の鮮度を誤解されないための注記なので、目立ちすぎない範囲で必ず読ませる */
+.data-meta-note { max-width: 34rem; color: var(--ink-subtle); font-size: .7rem; line-height: 1.5; text-align: right; }
 .scoreboard {
   display: grid;
   gap: 1.5rem;

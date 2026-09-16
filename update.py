@@ -15,6 +15,7 @@ import tempfile
 import unicodedata
 import time
 from dataclasses import dataclass
+from email.utils import parsedate_to_datetime
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
 from typing import Iterable
@@ -24,6 +25,10 @@ from urllib.robotparser import RobotFileParser
 import requests
 from bs4 import BeautifulSoup, Tag
 
+
+# 取得元が更新されなくなったと判断するまでの時間。
+# 月曜など試合のない日をまたいでも誤検知しないよう、丸3日に余裕を持たせている。
+SOURCE_STALE_HOURS = 72
 
 BASE_URL = "https://baseballdata.jp/"
 MASUDA_URL = urljoin(BASE_URL, "cdrm.html")
@@ -71,7 +76,25 @@ def as_float(value: str, label: str) -> float:
         raise UpdateError(f"{label} is not numeric: {value!r}") from exc
 
 
-def fetch(session: requests.Session, url: str) -> str:
+@dataclass(frozen=True)
+class FetchedPage:
+    """A fetched page body plus the source server's own Last-Modified time."""
+
+    text: str
+    last_modified: datetime | None
+
+
+def parse_last_modified(raw: str | None) -> datetime | None:
+    """Parse an HTTP Last-Modified header into JST, or None when absent/invalid."""
+    if not raw:
+        return None
+    try:
+        return parsedate_to_datetime(raw).astimezone(JST)
+    except (TypeError, ValueError):
+        return None
+
+
+def fetch(session: requests.Session, url: str) -> FetchedPage:
     for attempt in range(1, MAX_ATTEMPTS + 1):
         try:
             LOG.info("fetching %s (attempt %s/%s)", url, attempt, MAX_ATTEMPTS)
@@ -85,7 +108,7 @@ def fetch(session: requests.Session, url: str) -> str:
                 raise UpdateError(f"response was not valid UTF-8: {url}") from exc
             if len(text) < 1000:
                 raise UpdateError(f"response was unexpectedly short: {url}")
-            return text
+            return FetchedPage(text, parse_last_modified(response.headers.get("Last-Modified")))
         except UpdateError:
             raise
         except requests.RequestException:
@@ -325,25 +348,32 @@ def parse_recent_games(html: str) -> list[GameLine]:
     return games
 
 
-def fetch_masuda_stats(session: requests.Session) -> tuple[dict, str]:
-    """Fetch the season line and return it with the discovered player URL."""
-    return parse_masuda(fetch(session, MASUDA_URL))
+def fetch_masuda_stats(session: requests.Session) -> tuple[dict, str, datetime | None]:
+    """Fetch the season line and return it with the player URL and the source's update time."""
+    page = fetch(session, MASUDA_URL)
+    masuda, player_url = parse_masuda(page.text)
+    return masuda, player_url, page.last_modified
 
 
-def fetch_leader_stats(session: requests.Session) -> dict:
+def fetch_leader_stats(session: requests.Session) -> tuple[dict, datetime | None]:
     """Fetch the current qualified Central League batting leader."""
-    return parse_leader(fetch(session, LEADER_URL))
+    page = fetch(session, LEADER_URL)
+    return parse_leader(page.text), page.last_modified
 
 
-def fetch_standings(session: requests.Session) -> dict[str, int]:
+def fetch_standings(session: requests.Session) -> tuple[dict[str, int], datetime | None]:
     """Fetch completed game counts for every Central League team in one request."""
-    return parse_standings_games(fetch(session, TEAM_STANDINGS_URL))
+    page = fetch(session, TEAM_STANDINGS_URL)
+    return parse_standings_games(page.text), page.last_modified
 
 
-def fetch_recent_stats(session: requests.Session, player_url: str) -> list[GameLine]:
+def fetch_recent_stats(
+    session: requests.Session, player_url: str
+) -> tuple[list[GameLine], datetime | None]:
     """Fetch only Masuda's plate-appearance page and aggregate it later."""
     plate_url = player_url.replace(".html", "S.html")
-    return parse_recent_games(fetch(session, plate_url))
+    page = fetch(session, plate_url)
+    return parse_recent_games(page.text), page.last_modified
 
 
 def aggregate_games(games: list[GameLine], count: int) -> dict:
@@ -419,6 +449,7 @@ def build_payload(
     games: list[GameLine],
     team_games_played: int,
     leader_team_games_played: int | None = None,
+    source_last_modified: datetime | None = None,
 ) -> dict:
     remaining = max(TARGET_PA - masuda["pa"], 0)
     remaining_games = max(SEASON_GAMES - team_games_played, 0)
@@ -432,7 +463,16 @@ def build_payload(
     last10 = aggregate_games(games, 10)
     streak = hitting_streak(games)
     status = status_for(last5["avg"])
-    fetched_at = datetime.now(JST).isoformat(timespec="seconds")
+    now = datetime.now(JST)
+    fetched_at = now.isoformat(timespec="seconds")
+    # 取得自体は成功しているのに取得元が更新されなくなっている状態を拾う。
+    # 元は毎日未明に生成されるので、丸3日動かなければ明らかに異常とみなす。
+    source_age_hours = (
+        (now - source_last_modified).total_seconds() / 3600
+        if source_last_modified is not None
+        else None
+    )
+    source_stale = source_age_hours is not None and source_age_hours > SOURCE_STALE_HOURS
     return {
         "updated": fetched_at,
         "source_status": "ok",
@@ -447,6 +487,13 @@ def build_payload(
         },
         "source": {
             "site": "baseballdata.jp",
+            "site_name": "データで楽しむプロ野球",
+            "last_modified": (
+                source_last_modified.isoformat(timespec="seconds")
+                if source_last_modified is not None
+                else None
+            ),
+            "stale": source_stale,
             "masuda": MASUDA_URL,
             "leader": LEADER_URL,
             "team_standings": TEAM_STANDINGS_URL,
@@ -519,10 +566,10 @@ def main() -> None:
         # Only the required data pages are fetched; this script never crawls the site.
         robots = load_robots(session)
         assert_robots_allowed(robots, [MASUDA_URL, LEADER_URL, TEAM_STANDINGS_URL])
-        masuda, player_url = fetch_masuda_stats(session)
+        masuda, player_url, masuda_modified = fetch_masuda_stats(session)
         assert_robots_allowed(robots, [player_url.replace(".html", "S.html")])
-        leader = fetch_leader_stats(session)
-        standings = fetch_standings(session)
+        leader, leader_modified = fetch_leader_stats(session)
+        standings, standings_modified = fetch_standings(session)
         if "ヤクルト" not in standings:
             raise UpdateError("Yakult was not found in the Central League standings")
         team_games_played = standings["ヤクルト"]
@@ -532,9 +579,24 @@ def main() -> None:
             LOG.warning("leader team %r was not found in the standings; "
                         "the pace comparison will fall back to the player's game count",
                         leader.get("team"))
-        games = fetch_recent_stats(session, player_url)
+        games, games_modified = fetch_recent_stats(session, player_url)
+        # 取得元は全ページを深夜バッチで一括生成するため、最も新しい Last-Modified を代表値にする
+        modified_times = [
+            t for t in (masuda_modified, leader_modified, standings_modified, games_modified)
+            if t is not None
+        ]
+        source_last_modified = max(modified_times) if modified_times else None
         validate(masuda, leader, games, team_games_played)
-        payload = build_payload(masuda, leader, games, team_games_played, leader_team_games_played)
+        payload = build_payload(
+            masuda, leader, games, team_games_played,
+            leader_team_games_played, source_last_modified,
+        )
+        if payload["source"]["stale"]:
+            # 取得は成功しているので更新自体は止めない。気づけるように警告だけ残す。
+            LOG.warning("source has not changed for over %s hours (last modified %s); "
+                        "the site will show a stale-data notice",
+                        SOURCE_STALE_HOURS, source_last_modified)
+            print(f"::warning::source data appears stale (last modified {source_last_modified})")
         atomic_write(payload)
         atomic_write({
             "source_status": "ok",

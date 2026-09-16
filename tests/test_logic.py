@@ -2,8 +2,12 @@ import unittest
 
 from update import (
     GameLine, aggregate_games, build_payload, canonical_team, hitting_streak,
-    parse_standings_games, parse_team_games, regulation_pa_for_games, status_for,
+    parse_last_modified, parse_standings_games, parse_team_games,
+    regulation_pa_for_games, status_for,
 )
+from datetime import datetime, timedelta, timezone
+
+JST = timezone(timedelta(hours=9))
 
 
 def sample_player(pa=392, ab=356, hits=104):
@@ -100,6 +104,29 @@ class LogicTests(unittest.TestCase):
         last5 = aggregate_games(games, 5)
         self.assertAlmostEqual(last5["avg"], 8 / 19)
         self.assertEqual(status_for(last5["avg"]), "god")
+
+    def test_parse_last_modified(self):
+        parsed = parse_last_modified("Tue, 15 Sep 2026 18:49:54 GMT")
+        self.assertEqual(parsed.astimezone(JST).strftime("%Y-%m-%d %H:%M"), "2026-09-16 03:49")
+        self.assertIsNone(parse_last_modified(None))
+        self.assertIsNone(parse_last_modified("not a date"))
+
+    def test_fresh_source_is_not_flagged_stale(self):
+        recent = datetime.now(JST) - timedelta(hours=20)
+        payload = build_payload(sample_player(392), LEADER, GAMES, 129, 131, recent)
+        self.assertFalse(payload["source"]["stale"])
+        self.assertEqual(payload["source"]["last_modified"], recent.isoformat(timespec="seconds"))
+
+    def test_source_that_stopped_updating_is_flagged(self):
+        # 取得自体は成功するのに元データが動かなくなるサイレント故障を拾えること
+        stalled = datetime.now(JST) - timedelta(hours=80)
+        payload = build_payload(sample_player(392), LEADER, GAMES, 129, 131, stalled)
+        self.assertTrue(payload["source"]["stale"])
+
+    def test_unknown_source_time_is_not_flagged_stale(self):
+        payload = build_payload(sample_player(392), LEADER, GAMES, 129, 131)
+        self.assertIsNone(payload["source"]["last_modified"])
+        self.assertFalse(payload["source"]["stale"])
 
     def test_hitting_streak(self):
         self.assertEqual(hitting_streak(GAMES), 5)

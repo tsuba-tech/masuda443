@@ -12,6 +12,18 @@ function formatGap(value) {
   return formatAverage(Math.abs(value));
 }
 
+/**
+ * 日時を「2026/09/16 03:49」の形（JST固定）に整える。
+ * @param {Date} date
+ * @returns {string}
+ */
+function formatTimestamp(date) {
+  return new Intl.DateTimeFormat("ja-JP", {
+    timeZone: "Asia/Tokyo", year: "numeric", month: "2-digit", day: "2-digit",
+    hour: "2-digit", minute: "2-digit", hour12: false,
+  }).format(date);
+}
+
 function setText(selector, value) {
   const element = $(selector);
   if (element) element.textContent = value;
@@ -279,15 +291,16 @@ function render(data) {
   setText("#season-rbi", masuda.rbi);
   setText("#season-hits", masuda.hits);
 
+  // 取得元の更新時刻と、当サイトが取りに行った時刻は別物なので分けて出す。
+  // これを混同すると「更新済みなのに今日の試合が無い」と誤解される。
+  const sourceModified = data.source?.last_modified ? new Date(data.source.last_modified) : null;
+  const sourceLabel = sourceModified ? formatTimestamp(sourceModified) : "取得元の更新時刻は不明";
+  setText("#source-updated-at", sourceLabel);
+  setText("#source-updated-at-foot", sourceLabel);
+
   const updated = new Date(data.updated);
-  setText("#updated-at", new Intl.DateTimeFormat("ja-JP", {
-    timeZone: "Asia/Tokyo", year: "numeric", month: "2-digit", day: "2-digit",
-    hour: "2-digit", minute: "2-digit", hour12: false,
-  }).format(updated));
-  setText("#updated-at-top", new Intl.DateTimeFormat("ja-JP", {
-    timeZone: "Asia/Tokyo", year: "numeric", month: "2-digit", day: "2-digit",
-    hour: "2-digit", minute: "2-digit", hour12: false,
-  }).format(updated));
+  setText("#updated-at", formatTimestamp(updated));
+  setText("#updated-at-top", formatTimestamp(updated));
   renderQuickSim(masuda);
   renderRace(data);
 }
@@ -312,6 +325,12 @@ async function loadFetchStatus() {
     const response = await fetch(`fetch-status.json?t=${Date.now()}`, { cache: "no-store" });
     if (!response.ok) return;
     const status = await response.json();
+    if (currentData?.source?.stale) {
+      const banner = $("#load-error");
+      banner.textContent = "取得元の更新が停止している可能性があります。表示は最後に取得できた時点のデータです";
+      banner.hidden = false;
+      return;
+    }
     if (status.source_status === "error") {
       const banner = $("#load-error");
       banner.textContent = "最新取得に失敗しています。表示は前回正常取得時点のデータです";
