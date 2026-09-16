@@ -175,18 +175,10 @@ h1 span { display: block; color: var(--blue-1000); }
 .leader-stat > strong { display: block; overflow: hidden; color: var(--ink); font-size: 1rem; text-overflow: ellipsis; white-space: nowrap; }
 .leader-stat > span { display: block; margin-top: .2rem; color: var(--ink); font-size: clamp(2.1rem, 10vw, 3.6rem); font-weight: 700; line-height: 1.15; letter-spacing: -.05em; }
 .gap-chip { display: inline-block; margin: .55rem 0 0; padding: .25rem .55rem; border-radius: .2rem; background: var(--warning-bg); color: var(--warning); font-size: .75rem; font-weight: 700; }
-.leader-form { display: flex; flex-wrap: wrap; align-items: center; gap: .35rem .5rem; margin: .75rem 0 0; padding-top: .7rem; border-top: 1px solid var(--border); color: var(--ink-subtle); font-size: .75rem; }
-.leader-form strong { color: var(--ink); font-size: .95rem; }
-.leader-form span { padding: .1rem .4rem; border-radius: .2rem; font-weight: 700; }
 .form-god { background: #fff0c2; color: #704000; }
 .form-hot { background: var(--success-bg); color: var(--success); }
 .form-normal, .form-neutral { background: var(--blue-50); color: var(--blue-1000); }
 .form-cold { background: #f1f2f3; color: #4b5563; }
-.leader-race-box { margin-top: .75rem; padding: .65rem .7rem; border-left: .3rem solid var(--blue-1000); background: var(--blue-50); }
-.leader-race-title { margin: 0 0 .25rem; color: var(--blue-1000); font-size: .75rem; font-weight: 700; }
-.leader-race-line { margin: 0; color: var(--ink); font-size: .75rem; font-weight: 700; line-height: 1.5; }
-.leader-race-sub { margin: .15rem 0 0; color: var(--ink); font-size: .72rem; line-height: 1.55; }
-.leader-race-note { margin: .35rem 0 0; color: var(--ink-subtle); font-size: .62rem; line-height: 1.45; }
 
 .message-strip {
   display: grid;
@@ -241,19 +233,26 @@ h1 span { display: block; color: var(--blue-1000); }
 .sim-cell:last-child { grid-column: 1 / -1; border-right: 0; border-bottom: 0; }
 .sim-cell span { display: block; color: var(--ink-subtle); font-size: .7rem; white-space: nowrap; }
 .sim-cell strong { display: block; margin-top: .2rem; color: var(--ink); font-size: clamp(.9rem, 4vw, 1.3rem); font-weight: 700; }
-.race-scenarios { display: grid; gap: .75rem; margin-top: 1.25rem; }
-.scenario-card { padding: 1rem; border: 1px solid var(--border); border-top-width: .35rem; background: #fff; }
-.scenario-low { border-top-color: #6b7280; }
-.scenario-near { border-top-color: #e5a000; }
-.scenario-over { border-top-color: var(--success); }
-.scenario-label { margin: 0 0 .25rem; color: var(--ink-subtle); font-size: .8rem; font-weight: 700; }
-.scenario-card > strong { display: block; color: var(--ink); font-size: 1.8rem; line-height: 1.3; }
-.scenario-card > p:not(.scenario-label) { margin: .35rem 0; color: var(--ink-subtle); font-size: .8rem; }
-.scenario-card > div { padding-top: .6rem; border-top: 1px solid var(--border); color: var(--ink-subtle); font-size: .8rem; }
-.scenario-card b { margin-left: .3rem; color: var(--ink); font-size: 1.35rem; }
-.scenario-card small { display: block; margin-top: .25rem; color: var(--blue-1000); font-size: .75rem; font-weight: 700; }
-.scenario-over small { color: var(--success); }
-.scenario-note { margin: .9rem 0 0; color: var(--ink-subtle); font-size: .75rem; }
+.race-assumption-note { margin: .35rem 0 0; color: var(--ink-subtle); font-size: .75rem; line-height: 1.5; }
+.race-compare { display: grid; gap: .75rem; margin-top: 1.25rem; }
+.compare-card { display: flex; flex-direction: column; padding: 1rem; border: 1px solid var(--border); border-top: .35rem solid var(--blue-1000); background: #fff; }
+.compare-card-pace { border-top-color: #e5a000; }
+.compare-index { margin: 0; color: var(--ink-subtle); font-size: .75rem; font-weight: 700; }
+.compare-title { margin: .15rem 0 .9rem; color: var(--ink); font-size: 1.0625rem; line-height: 1.5; }
+.compare-block { padding: .7rem .8rem; border-left: .25rem solid var(--border-strong); background: var(--surface-subtle); }
+.compare-block + .compare-block { margin-top: .6rem; }
+/* 増田選手側は結論にあたるのでブルーで強調する */
+.compare-block-masuda { margin-top: auto; border-left-color: var(--blue-1000); background: var(--blue-50); }
+.compare-who { display: flex; flex-wrap: wrap; align-items: center; gap: .3rem .5rem; margin: 0 0 .35rem; color: var(--ink); font-size: .8rem; font-weight: 700; }
+.compare-who .form-god, .compare-who .form-hot, .compare-who .form-normal,
+.compare-who .form-neutral, .compare-who .form-cold { padding: .1rem .4rem; border-radius: .2rem; font-size: .7rem; }
+.compare-row { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: .25rem .75rem; margin: .2rem 0 0; color: var(--ink-subtle); font-size: .8rem; }
+.compare-row strong { color: var(--ink); font-size: 1.5rem; font-weight: 700; letter-spacing: -.03em; }
+.compare-row-lead strong { font-size: 1.85rem; }
+.compare-need { margin: .2rem 0 .1rem; color: var(--ink); font-size: .85rem; line-height: 1.6; }
+.compare-need strong { margin: 0 .15rem; color: var(--blue-1000); font-size: 1.6rem; font-weight: 700; }
+.compare-need-miss { color: var(--ink); font-size: .9rem; font-weight: 700; }
+.compare-note { margin: .75rem 0 0; color: var(--ink-subtle); font-size: .72rem; line-height: 1.55; }
 
 .cheer-section { position: relative; margin: 2rem 0 1rem; padding: 2rem 1rem; overflow: hidden; border: 1px solid #b8c5ff; background: var(--blue-50); color: var(--ink); text-align: center; }
 .cheer-section .eyebrow { color: var(--blue-1000); }
@@ -287,13 +286,12 @@ body.mode-cold { --status: #4b5563; --status-bg: #f1f2f3; }
   .scoreboard-copy h1 span { display: inline; }
   .scoreboard-copy .creed { position: static; margin: 0 0 .5rem; font-size: .875rem; }
   .first-view-stats { grid-column: auto; }
-  .race-context { grid-template-columns: 1fr 1fr; }
   .pace-summary { grid-template-columns: 1fr 1fr; }
   .dashboard-grid { grid-template-columns: repeat(3, 1fr); }
   .quick-sim { grid-template-columns: repeat(5, minmax(0, 1fr)); }
   .sim-cell, .sim-cell:nth-child(2n) { grid-column: auto; border-right: 1px solid var(--border); border-bottom: 0; }
   .sim-cell:last-child { grid-column: auto; border-right: 0; }
-  .race-scenarios { grid-template-columns: repeat(3, 1fr); }
+  .race-compare { grid-template-columns: 1fr 1fr; }
 }
 
 @media (min-width: 64rem) {
@@ -308,12 +306,4 @@ body.mode-cold { --status: #4b5563; --status-bg: #f1f2f3; }
 }
 
 .race-link { display: block; margin-top: .85rem; font-size: .8rem; }
-.race-context { display: grid; gap: 1.25rem; padding: 1.25rem; margin-top: 1.25rem; border: 1px solid var(--border); background: var(--surface-subtle); }
-.race-context-name { margin: 0; font-weight: 700; }
-.race-context .leader-form { margin: .5rem 0 0; padding: 0; border: 0; font-size: .875rem; }
-.race-context .leader-race-box { margin: 0; }
-.race-context .leader-race-line { font-size: 1.125rem; }
-.race-context .leader-race-sub, .race-context .leader-race-note { font-size: .8rem; }
-@media (min-width: 48rem) {
-  .race-context { grid-template-columns: 1fr 1fr; }
-}
+

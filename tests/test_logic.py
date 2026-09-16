@@ -1,6 +1,9 @@
 import unittest
 
-from update import GameLine, aggregate_games, build_payload, hitting_streak, parse_team_games, regulation_pa_for_games, status_for
+from update import (
+    GameLine, aggregate_games, build_payload, canonical_team, hitting_streak,
+    parse_standings_games, parse_team_games, regulation_pa_for_games, status_for,
+)
 
 
 def sample_player(pa=392, ab=356, hits=104):
@@ -61,6 +64,36 @@ class LogicTests(unittest.TestCase):
         <tbody><tr><td>4</td><td>ヤクルト</td><td>129</td></tr></tbody></table>
         """
         self.assertEqual(parse_team_games(html), 129)
+
+    def test_parse_standings_covers_every_team(self):
+        html = """
+        <table><thead><tr><th>#</th><th>球団</th><th>試</th></tr></thead>
+        <tbody>
+        <tr><td>1</td><td>阪神</td><td>131</td></tr>
+        <tr><td>2</td><td>横浜DeNA</td><td>130</td></tr>
+        <tr><td>4</td><td>ヤクルト</td><td>129</td></tr>
+        </tbody></table>
+        """
+        standings = parse_standings_games(html)
+        self.assertEqual(standings["阪神"], 131)
+        self.assertEqual(standings["DeNA"], 130)
+        self.assertEqual(standings["ヤクルト"], 129)
+
+    def test_canonical_team_handles_notation_differences(self):
+        self.assertEqual(canonical_team("東京ヤクルト"), "ヤクルト")
+        self.assertEqual(canonical_team("横浜DeNAベイスターズ"), "DeNA")
+        self.assertEqual(canonical_team("ＤｅＮＡ"), "DeNA")
+        self.assertIsNone(canonical_team("オリックス"))
+
+    def test_leader_team_games_are_carried_into_the_payload(self):
+        payload = build_payload(sample_player(392), LEADER, GAMES, 129, 131)
+        self.assertEqual(payload["leader"]["team_games_played"], 131)
+        self.assertEqual(payload["leader"]["team_remaining_games"], 12)
+
+    def test_leader_team_games_may_be_unknown(self):
+        payload = build_payload(sample_player(392), LEADER, GAMES, 129)
+        self.assertIsNone(payload["leader"]["team_games_played"])
+        self.assertIsNone(payload["leader"]["team_remaining_games"])
 
     def test_last_five_and_status(self):
         games = [GameLine(f"09/{i:02}", ab, hits, 0, 0, 0) for i, ab, hits in [(5,4,2),(4,4,2),(3,4,2),(2,4,1),(1,3,1)]]

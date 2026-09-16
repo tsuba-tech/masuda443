@@ -12,6 +12,7 @@ import logging
 import os
 import re
 import tempfile
+import unicodedata
 import time
 from dataclasses import dataclass
 from datetime import datetime, timezone, timedelta
@@ -228,14 +229,53 @@ def parse_leader(html: str) -> dict:
     }
 
 
-def parse_team_games(html: str) -> int:
-    """Return the Swallows' completed team games from the league standings."""
+# 順位表と打撃成績表で球団名の表記が違う（「ヤクルト」「東京ヤクルト」など）ため、
+# どちらの表記から来てもひとつのキーに寄せられるようにしておく。
+CENTRAL_TEAM_ALIASES: dict[str, tuple[str, ...]] = {
+    "ヤクルト": ("ヤクルト", "東京ヤクルト", "東京ヤクルトスワローズ", "ヤ"),
+    "阪神": ("阪神", "阪神タイガース", "神"),
+    "巨人": ("巨人", "読売", "読売ジャイアンツ", "巨"),
+    "広島": ("広島", "広島東洋", "広島東洋カープ", "広"),
+    "中日": ("中日", "中日ドラゴンズ", "中"),
+    "DeNA": ("DENA", "横浜DENA", "横浜DENAベイスターズ", "横浜", "デ"),
+}
+
+
+def canonical_team(label: str) -> str | None:
+    """Map a team label from any table onto a canonical Central League key."""
+    text = unicodedata.normalize("NFKC", normalize(label)).upper()
+    if not text:
+        return None
+    for canonical, aliases in CENTRAL_TEAM_ALIASES.items():
+        if text in aliases:
+            return canonical
+    # 「横浜DeNAベイスターズ」のような表記ゆれは部分一致で拾う（1文字略称は誤爆するので除く）
+    for canonical, aliases in CENTRAL_TEAM_ALIASES.items():
+        if any(len(alias) >= 2 and alias in text for alias in aliases):
+            return canonical
+    return None
+
+
+def parse_standings_games(html: str) -> dict[str, int]:
+    """Return completed game counts for every Central League team, keyed by canonical name."""
     soup = BeautifulSoup(html, "html.parser")
     table = find_rank_table(soup, ["球団", "試"])
+    standings: dict[str, int] = {}
     for row, _ in rows_as_dicts(table):
-        if normalize(pick(row, "球団")) in {"ヤクルト", "東京ヤクルト"}:
-            return as_int(pick(row, "試", "試合"), "Swallows team games")
-    raise UpdateError("Yakult was not found in the Central League standings")
+        team = canonical_team(pick(row, "球団"))
+        if team and team not in standings:
+            standings[team] = as_int(pick(row, "試", "試合"), f"{team} team games")
+    if not standings:
+        raise UpdateError("no Central League teams were found in the standings")
+    return standings
+
+
+def parse_team_games(html: str) -> int:
+    """Return the Swallows' completed team games from the league standings."""
+    standings = parse_standings_games(html)
+    if "ヤクルト" not in standings:
+        raise UpdateError("Yakult was not found in the Central League standings")
+    return standings["ヤクルト"]
 
 
 @dataclass
@@ -295,9 +335,9 @@ def fetch_leader_stats(session: requests.Session) -> dict:
     return parse_leader(fetch(session, LEADER_URL))
 
 
-def fetch_team_games(session: requests.Session) -> int:
-    """Fetch the Swallows' completed team-game count."""
-    return parse_team_games(fetch(session, TEAM_STANDINGS_URL))
+def fetch_standings(session: requests.Session) -> dict[str, int]:
+    """Fetch completed game counts for every Central League team in one request."""
+    return parse_standings_games(fetch(session, TEAM_STANDINGS_URL))
 
 
 def fetch_recent_stats(session: requests.Session, player_url: str) -> list[GameLine]:
@@ -373,7 +413,13 @@ def validate(masuda: dict, leader: dict, games: list[GameLine], team_games_playe
         raise UpdateError("; ".join(problems))
 
 
-def build_payload(masuda: dict, leader: dict, games: list[GameLine], team_games_played: int) -> dict:
+def build_payload(
+    masuda: dict,
+    leader: dict,
+    games: list[GameLine],
+    team_games_played: int,
+    leader_team_games_played: int | None = None,
+) -> dict:
     remaining = max(TARGET_PA - masuda["pa"], 0)
     remaining_games = max(SEASON_GAMES - team_games_played, 0)
     current_regulation_pa = regulation_pa_for_games(team_games_played)
@@ -406,7 +452,16 @@ def build_payload(masuda: dict, leader: dict, games: list[GameLine], team_games_
             "team_standings": TEAM_STANDINGS_URL,
         },
         "masuda": masuda,
-        "leader": leader,
+        # 首位打者の残り試合数は所属球団の順位表の行から取る（増田選手側と同じ出典）
+        "leader": {
+            **leader,
+            "team_games_played": leader_team_games_played,
+            "team_remaining_games": (
+                max(SEASON_GAMES - leader_team_games_played, 0)
+                if leader_team_games_played is not None
+                else None
+            ),
+        },
         "recent": {
             "last5": last5,
             "last10": last10,
@@ -467,10 +522,19 @@ def main() -> None:
         masuda, player_url = fetch_masuda_stats(session)
         assert_robots_allowed(robots, [player_url.replace(".html", "S.html")])
         leader = fetch_leader_stats(session)
-        team_games_played = fetch_team_games(session)
+        standings = fetch_standings(session)
+        if "ヤクルト" not in standings:
+            raise UpdateError("Yakult was not found in the Central League standings")
+        team_games_played = standings["ヤクルト"]
+        leader_team = canonical_team(leader.get("team", ""))
+        leader_team_games_played = standings.get(leader_team) if leader_team else None
+        if leader_team_games_played is None:
+            LOG.warning("leader team %r was not found in the standings; "
+                        "the pace comparison will fall back to the player's game count",
+                        leader.get("team"))
         games = fetch_recent_stats(session, player_url)
         validate(masuda, leader, games, team_games_played)
-        payload = build_payload(masuda, leader, games, team_games_played)
+        payload = build_payload(masuda, leader, games, team_games_played, leader_team_games_played)
         atomic_write(payload)
         atomic_write({
             "source_status": "ok",

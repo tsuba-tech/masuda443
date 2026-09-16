@@ -62,53 +62,156 @@ function renderQuickSim(masuda) {
   }
 }
 
+/**
+ * 小さなDOM生成ヘルパー。選手名などのデータ由来の文字列を
+ * textContent 経由で入れるため、innerHTML は使わない。
+ * @param {string} tag
+ * @param {string|null} className
+ * @param {string} [text]
+ * @returns {HTMLElement}
+ */
+function el(tag, className, text) {
+  const node = document.createElement(tag);
+  if (className) node.className = className;
+  if (text !== undefined) node.textContent = text;
+  return node;
+}
+
+/**
+ * 「ラベル ---- 数値」の1行を作る。
+ * @param {string} label
+ * @param {string} value
+ * @param {boolean} [lead] 大きめに見せる主役の行かどうか
+ * @returns {HTMLParagraphElement}
+ */
+function compareRow(label, value, lead) {
+  const row = el("p", lead ? "compare-row compare-row-lead" : "compare-row");
+  row.append(el("span", null, label), el("strong", null, value));
+  return row;
+}
+
+/**
+ * 首位打者との比較に使う数値をまとめて計算する。
+ *
+ * - 増田選手の残り打席は「現在の打数化率（打数÷打席）」で打数に換算する。
+ * - 比較1：首位打者の打率が現在のままだと仮定したときに必要な安打数。
+ * - 比較2：首位打者が直近5試合の打率ペースで残りを消化したと仮定したときに必要な安打数。
+ *   首位打者の残り試合数は、今季試合数と出場試合数の差で仮定する（他球団の消化試合数は持たないため）。
+ *
+ * @param {object} data data.json の中身
+ * @returns {{remainingPA:number, projectedAB:number, currentNeed:?object, paceLeaderAvg:number, paceProjectedAB:number, paceNeed:?object}}
+ */
 function raceProjection(data) {
-  const { masuda, leader, derived } = data;
+  const { masuda, leader, derived, team } = data;
   const remainingPA = derived.remaining_pa;
   const projectedAB = remainingPA > 0 ? Math.max(1, Math.round(remainingPA * masuda.ab / masuda.pa)) : 0;
-  if (projectedAB === 0) return { remainingPA, projectedAB, scenarios: [] };
+  if (projectedAB === 0) return { remainingPA, projectedAB: 0 };
 
   const finalAB = masuda.ab + projectedAB;
-  const lowerHits = Math.min(projectedAB, Math.round(projectedAB * 0.250));
-  const nearHits = Math.max(0, Math.min(projectedAB, Math.floor(leader.avg * finalAB - masuda.hits)));
-  const overHits = Math.max(0, Math.min(projectedAB, nearHits + 1));
-  const makeScenario = (tone, title, hits) => {
-    const finalAvg = (masuda.hits + hits) / finalAB;
-    const futureAvg = hits / projectedAB;
-    const gap = finalAvg - leader.avg;
-    return { tone, title, hits, finalAvg, futureAvg, gap };
+  // 表示は小数3桁なので、丸めた結果まで上回る安打数を最小から探す
+  // （わずかに上回るだけだと画面上は同じ数字に見えてしまうため）。
+  const hitsToExceed = (targetAvg) => {
+    if (!Number.isFinite(targetAvg)) return null;
+    for (let hits = 0; hits <= projectedAB; hits += 1) {
+      const finalAvg = (masuda.hits + hits) / finalAB;
+      if (finalAvg > targetAvg && formatAverage(finalAvg) !== formatAverage(targetAvg)) {
+        return { hits, finalAvg };
+      }
+    }
+    return null;
   };
+
+  // 首位打者の残り試合数は、所属球団の消化試合数（順位表由来）から出す。
+  // 取得できていない古いデータでは、出場試合数で代用する。
+  const leaderTeamGames = Number.isFinite(leader.team_games_played)
+    ? leader.team_games_played
+    : leader.games;
+  const leaderRemainingGames = Number.isFinite(leader.team_remaining_games)
+    ? leader.team_remaining_games
+    : Math.max(0, team.season_games - leaderTeamGames);
+  // 1試合あたりの打数は「球団の消化試合数」で割る（欠場分も込みのペースにする）
+  const leaderProjectedAB = leaderTeamGames > 0
+    ? Math.round(leaderRemainingGames * (leader.ab / leaderTeamGames))
+    : 0;
+  const paceLeaderAvg = Number.isFinite(leader.recent5_avg) && leaderProjectedAB > 0
+    ? (leader.hits + leaderProjectedAB * leader.recent5_avg) / (leader.ab + leaderProjectedAB)
+    : leader.avg;
+
   return {
     remainingPA,
     projectedAB,
-    scenarios: [
-      makeScenario("low", "下振れ", lowerHits),
-      makeScenario("near", "首位に迫る", nearHits),
-      makeScenario("over", "首位を上回る", overHits),
-    ],
+    currentNeed: hitsToExceed(leader.avg),
+    paceLeaderAvg,
+    paceProjectedAB: leaderProjectedAB,
+    paceRemainingGames: leaderRemainingGames,
+    paceNeed: hitsToExceed(paceLeaderAvg),
   };
 }
 
+/**
+ * 「増田選手が上回るには 残り約N打数で X安打／最終 .XXX」のブロックを作る。
+ * 届かない場合はその旨を出す。
+ * @param {?{hits:number, finalAvg:number}} need
+ * @param {number} projectedAB
+ * @returns {HTMLDivElement}
+ */
+function compareMasudaBlock(need, projectedAB) {
+  const block = el("div", "compare-block compare-block-masuda");
+  block.append(el("p", "compare-who", "増田選手が上回るには"));
+  if (!need) {
+    block.append(el("p", "compare-need compare-need-miss", `残り約${projectedAB}打数すべて安打でも届きません`));
+    return block;
+  }
+  const line = el("p", "compare-need");
+  line.append(
+    document.createTextNode(`残り約${projectedAB}打数で `),
+    el("strong", null, String(need.hits)),
+    document.createTextNode("安打"),
+  );
+  block.append(line, compareRow("最終", formatAverage(need.finalAvg), true));
+  return block;
+}
+
 function renderRace(data) {
+  const { leader } = data;
   const projection = raceProjection(data);
-  const container = $("#race-scenarios");
+  const container = $("#race-compare");
+  const note = $("#race-assumption-note");
   container.replaceChildren();
+
   if (!projection.projectedAB) {
     setText("#race-assumption", "規定打席に到達しています。");
+    note.hidden = true;
     return;
   }
-  setText("#race-assumption", `残り${projection.remainingPA}打席を、現在の打数割合から約${projection.projectedAB}打数として試算`);
-  projection.scenarios.forEach((scenario) => {
-    const article = document.createElement("article");
-    article.className = `scenario-card scenario-${scenario.tone}`;
-    const comparison = scenario.gap > 0
-      ? `首位を ${formatGap(scenario.gap)} 上回る`
-      : scenario.gap < 0
-        ? `首位まで ${formatGap(scenario.gap)}`
-        : "首位と同率";
-    article.innerHTML = `<p class="scenario-label">${scenario.title}</p><strong>${scenario.hits}安打</strong><p>${projection.projectedAB}打数 ${scenario.hits}安打（${formatAverage(scenario.futureAvg)}）</p><div>最終打率 <b>${formatAverage(scenario.finalAvg)}</b></div><small>${comparison}</small>`;
-    container.append(article);
-  });
+  note.hidden = false;
+  setText("#race-assumption", `残り${projection.remainingPA}打席 → 現在の打数化率から約${projection.projectedAB}打数と仮定して試算`);
+
+  // 比較1：首位打者の打率が現在のままの場合
+  const currentCard = el("article", "compare-card");
+  currentCard.append(el("p", "compare-index", "比較1"));
+  currentCard.append(el("h3", "compare-title", "現在の首位打率を上回るには"));
+  const currentLeader = el("div", "compare-block");
+  currentLeader.append(el("p", "compare-who", withHonorific(leader.name)));
+  currentLeader.append(compareRow("現在", formatAverage(leader.avg), true));
+  currentCard.append(currentLeader, compareMasudaBlock(projection.currentNeed, projection.projectedAB));
+  currentCard.append(el("p", "compare-note", "※首位打者の打率が現在のままだと仮定した場合の目安です。"));
+
+  // 比較2：首位打者が直近5試合のペースで推移した場合
+  const paceCard = el("article", "compare-card compare-card-pace");
+  paceCard.append(el("p", "compare-index", "比較2"));
+  paceCard.append(el("h3", "compare-title", "直近5試合ペースで推移した場合"));
+  const paceLeader = el("div", "compare-block");
+  const who = el("p", "compare-who", withHonorific(leader.name));
+  const form = formLabel(leader.recent5_avg);
+  who.append(el("span", form.className, form.label));
+  paceLeader.append(who);
+  paceLeader.append(compareRow("直近5試合", formatAverage(leader.recent5_avg)));
+  paceLeader.append(compareRow(`最終想定（残り約${projection.paceProjectedAB}打数）`, formatAverage(projection.paceLeaderAvg), true));
+  paceCard.append(paceLeader, compareMasudaBlock(projection.paceNeed, projection.projectedAB));
+  paceCard.append(el("p", "compare-note", `※予測ではなく、直近5試合の打撃ペースをそのまま延長した仮定シナリオです。残り${projection.paceRemainingGames}試合分を延長しています。`));
+
+  container.append(currentCard, paceCard);
 }
 
 function render(data) {
@@ -144,23 +247,8 @@ function render(data) {
   setText("#masuda-avg", formatAverage(masuda.avg));
   setText("#masuda-detail", `${masuda.hits}安打 / ${masuda.ab}打数`);
   setText("#leader-name", withHonorific(leader.name));
-  setText("#leader-context-name", `${withHonorific(leader.name)}　通算打率 ${formatAverage(leader.avg)}`);
   setText("#leader-avg", formatAverage(leader.avg));
   setText("#leader-gap", masuda.avg >= leader.avg ? "増田選手が首位" : `増田選手との差 ${formatGap(leader.avg - masuda.avg)}`);
-  setText("#leader-recent5", formatAverage(leader.recent5_avg));
-  const leaderForm = formLabel(leader.recent5_avg);
-  const leaderFormLabel = $("#leader-form-label");
-  leaderFormLabel.textContent = leaderForm.label;
-  leaderFormLabel.className = leaderForm.className;
-  const projection = raceProjection(data);
-  if (projection.scenarios.length) {
-    const over = projection.scenarios[2];
-    setText("#leader-race-line", `残り約${projection.projectedAB}打数で${over.hits}安打`);
-    setText("#leader-race-sub", `最終 ${formatAverage(over.finalAvg)}（現在の首位 ${formatAverage(leader.avg)}）`);
-  } else {
-    setText("#leader-race-line", "規定打席に到達");
-    setText("#leader-race-sub", "現在の打率で首位と比較します");
-  }
   setText("#main-message", specialMessage(data));
 
   setText("#adjusted-avg", formatAverage(derived.adjusted_avg));
