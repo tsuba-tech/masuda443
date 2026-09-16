@@ -7,8 +7,8 @@
   <meta name="description" content="2026年シーズン、増田珠選手の規定打席443到達と首位打者争いを追う非公式応援ダッシュボード。">
   <title>MASUDA 443｜2026年シーズン 増田珠選手、首位打者への道</title>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='8' fill='%230017c1'/%3E%3Cpath d='M12 47V17h8l12 17 12-17h8v30h-9V31L32 46 21 31v16z' fill='white'/%3E%3C/svg%3E">
-  <link rel="stylesheet" href="style.css?v=1.3.1">
-  <script src="app.js?v=1.3.1" defer></script>
+  <link rel="stylesheet" href="style.css?v=1.4.0">
+  <script src="app.js?v=1.4.0" defer></script>
 </head>
 <body class="mode-normal">
   <div class="ambient" aria-hidden="true"></div>
@@ -23,7 +23,7 @@
   <main id="top">
     <div class="data-meta" aria-label="データ更新情報">
       <p><span>最終更新</span><time id="updated-at-top">----</time></p>
-      <p><span>自動更新の目安</span><strong>17:00／21:00／21:30／22:30／23:30／翌1:00</strong></p>
+      <p><span>更新時間の目安</span><strong>17:00／21:00／21:30／22:30／23:30／翌1:00</strong></p>
     </div>
     <section class="scoreboard" aria-labelledby="page-title">
       <div class="scoreboard-copy">
@@ -42,8 +42,6 @@
           <span id="progress-bar"></span>
         </div>
         <div class="progress-meta"><strong id="pa-progress">--- / 443</strong><span id="progress-percent">--%</span></div>
-        <p id="current-qualification" class="current-qualification">現在の消化試合数に応じた規定打席を計算中</p>
-        <p id="required-pace" class="required-pace">残り試合あたりの必要打席数を計算中</p>
         <p class="regulation-note">規定打席は「チーム試合数×3.1」を四捨五入。2026年は143試合制のため443打席です。</p>
       </div>
 
@@ -67,6 +65,17 @@
           </div>
         </article>
       </div>
+    </section>
+
+    <section class="pace-summary" aria-label="規定打席への現在地">
+      <article>
+        <span>現在の規定打席ライン</span>
+        <p id="current-qualification">消化試合数に応じた規定打席を計算中</p>
+      </article>
+      <article>
+        <span>シーズン最終までのペース</span>
+        <p id="required-pace">残り試合あたりの必要打席数を計算中</p>
+      </article>
     </section>
 
     <section class="message-strip" aria-live="polite">
@@ -124,7 +133,7 @@
   </main>
 
   <footer>
-    <p class="site-version">MASUDA 443 v1.3.1</p>
+    <p class="site-version">MASUDA 443 v1.4.0</p>
     <p>最終更新　<time id="updated-at">----</time></p>
     <p>成績データ出典：<a href="https://baseballdata.jp/" target="_blank" rel="noopener noreferrer">baseballdata.jp</a></p>
     <p>本サイトは非公式ファンサイトです。<br>東京ヤクルトスワローズ、NPB、選手本人、baseballdata.jpとは関係ありません。</p>

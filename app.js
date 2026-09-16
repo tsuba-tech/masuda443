@@ -123,12 +123,12 @@ function render(data) {
     const currentResult = derived.current_regulation_remaining_pa === 0
       ? "現時点で到達"
       : `あと${derived.current_regulation_remaining_pa}打席`;
-    setText("#current-qualification", `${data.team.games_played}試合消化時点の規定打席：${data.team.current_regulation_pa}（増田選手 ${masuda.pa}打席／${currentResult}）`);
+    setText("#current-qualification", `${data.team.games_played}試合消化時点：規定打席${data.team.current_regulation_pa}／増田選手${masuda.pa}打席（${currentResult}）`);
   }
   if (derived.remaining_pa === 0) {
     setText("#required-pace", "規定打席に到達しています");
   } else if (data.team?.remaining_games > 0 && Number.isFinite(derived.required_pa_per_game)) {
-    setText("#required-pace", `チーム残り${data.team.remaining_games}試合で${derived.remaining_pa}打席 → 1試合平均 約${derived.required_pa_per_game.toFixed(2)}打席が必要`);
+    setText("#required-pace", `残り${data.team.remaining_games}試合：必要${derived.remaining_pa}打席／1試合平均 約${derived.required_pa_per_game.toFixed(2)}打席`);
   } else {
     setText("#required-pace", "レギュラーシーズン終了時点で規定打席未到達");
   }
@@ -154,8 +154,8 @@ function render(data) {
   const projection = raceProjection(data);
   if (projection.scenarios.length) {
     const over = projection.scenarios[2];
-    setText("#leader-race-line", `残り${projection.remainingPA}打席（約${projection.projectedAB}打数）`);
-    setText("#leader-race-sub", `${over.hits}安打なら最終打率 ${formatAverage(over.finalAvg)} となり、現在の首位打率 ${formatAverage(leader.avg)} を上回ります`);
+    setText("#leader-race-line", `残り約${projection.projectedAB}打数で${over.hits}安打`);
+    setText("#leader-race-sub", `最終 ${formatAverage(over.finalAvg)}（現在の首位 ${formatAverage(leader.avg)}）`);
   } else {
     setText("#leader-race-line", "規定打席に到達");
     setText("#leader-race-sub", "現在の打率で首位と比較します");
