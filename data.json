@@ -1,7 +1,7 @@
 {
-  "updated": "2026-09-16T17:33:03+09:00",
+  "updated": "2026-09-16T21:40:58+09:00",
   "source_status": "ok",
-  "last_successful_fetch": "2026-09-16T17:33:03+09:00",
+  "last_successful_fetch": "2026-09-16T21:40:58+09:00",
   "target_pa": 443,
   "team": {
     "name": "東京ヤクルトスワローズ",
@@ -47,7 +47,9 @@
     "recent5_avg": 0.211,
     "obp": 0.393,
     "slg": 0.618,
-    "ops": 1.011
+    "ops": 1.011,
+    "team_games_played": 127,
+    "team_remaining_games": 16
   },
   "recent": {
     "last5": {
