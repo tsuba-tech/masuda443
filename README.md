@@ -44,7 +44,7 @@ Windows PowerShellでは `$env:SCRAPING_ENABLED='false'; python update.py` と�
 
 ## GitHub Actions
 
-`.github/workflows/update.yml` は毎日、日本時間21:30・22:30・23:30に更新を実行します。Actions画面の `Run workflow` から手動実行もできます。テストとデータ更新が成功し、`data.json` に差分がある場合だけコミットします。
+`.github/workflows/update.yml` は毎日、日本時間21:30・22:30・23:30に更新を実行します。Actions画面の `Run workflow` から手動実行もできます。データに差分がある場合だけコミットし、処理後に最新のサイトをGitHub Pagesへ公開します。
 
 リポジトリの **Settings → Actions → General → Workflow permissions** で書き込み権限を許可してください。ワークフロー側にも `contents: write` を設定済みです。
 
@@ -52,10 +52,10 @@ Windows PowerShellでは `$env:SCRAPING_ENABLED='false'; python update.py` と�
 
 1. GitHubにこのディレクトリをリポジトリとしてpushします。
 2. **Settings → Pages** を開きます。
-3. Sourceを **Deploy from a branch** にします。
-4. Branchを `main`、フォルダーを `/(root)` にして保存します。
+3. Sourceを **GitHub Actions** にします。
+4. `.github/workflows/pages.yml` が、`main` への通常のpush時にサイトを公開します。
 
-公開URLは通常 `https://<username>.github.io/masuda443/` です。`data.json` の自動コミット後、GitHub Pagesにも反映されます。
+公開URLは通常 `https://<username>.github.io/masuda443/` です。定期データ更新後も `update.yml` 内の公開ジョブが実行されるため、最新の `data.json` がサイトへ反映されます。
 
 ## ファイル構成
 
@@ -72,7 +72,8 @@ masuda443/
 ├── tests/
 │   └── test_logic.py          # 規定打席・特例・状態判定テスト
 └── .github/workflows/
-    └── update.yml             # 定期更新
+    ├── update.yml             # 定期データ更新と更新後の公開
+    └── pages.yml              # 通常のpush時のサイト公開
 ```
 
 ## 注意事項

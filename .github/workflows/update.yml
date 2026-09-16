@@ -7,9 +7,6 @@ on:
     - cron: "30 14 * * *"
   workflow_dispatch:
 
-permissions:
-  contents: write
-
 concurrency:
   group: masuda443-data-update
   cancel-in-progress: false
@@ -17,6 +14,8 @@ concurrency:
 jobs:
   update:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     env:
       MASUDA443_USER_AGENT: MASUDA443-FanSite/1.0 (+https://github.com/${{ github.repository }})
     steps:
@@ -55,3 +54,32 @@ jobs:
       - name: Report update failure
         if: steps.data_update.outcome == 'failure'
         run: exit 1
+
+  deploy:
+    needs: update
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout latest main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload site artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+
+      - name: Deploy GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
