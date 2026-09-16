@@ -211,7 +211,7 @@ function initCheer() {
 
 async function loadFetchStatus() {
   try {
-    const response = await fetch("fetch-status.json", { cache: "no-store" });
+    const response = await fetch(`fetch-status.json?t=${Date.now()}`, { cache: "no-store" });
     if (!response.ok) return;
     const status = await response.json();
     if (status.source_status === "error") {
@@ -231,7 +231,7 @@ async function loadFetchStatus() {
 async function init() {
   initCheer();
   try {
-    const response = await fetch("data.json", { cache: "no-store" });
+    const response = await fetch(`data.json?t=${Date.now()}`, { cache: "no-store" });
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     render(await response.json());
     await loadFetchStatus();
