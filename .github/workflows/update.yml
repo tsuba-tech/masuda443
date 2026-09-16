@@ -1,13 +1,16 @@
 name: Update baseball data
 
 on:
+  # GitHub Actions のスケジュールは毎時0分・30分に実行が集中し、
+  # 高負荷時はイベントが欠落する。混雑を避けて10分・40分にずらしている。
+  # 時刻は UTC 指定（+9時間が JST）。
   schedule:
-    - cron: "0 8 * * *"
-    - cron: "0 12 * * *"
-    - cron: "30 12 * * *"
-    - cron: "30 13 * * *"
-    - cron: "30 14 * * *"
-    - cron: "0 16 * * *"
+    - cron: "10 8 * * *"   # 17:10 JST
+    - cron: "10 12 * * *"  # 21:10 JST
+    - cron: "40 12 * * *"  # 21:40 JST
+    - cron: "40 13 * * *"  # 22:40 JST
+    - cron: "40 14 * * *"  # 23:40 JST
+    - cron: "10 16 * * *"  # 翌 1:10 JST
   workflow_dispatch:
 
 concurrency:
