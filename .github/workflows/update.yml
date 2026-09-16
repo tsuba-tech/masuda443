@@ -1,0 +1,57 @@
+name: Update baseball data
+
+on:
+  schedule:
+    - cron: "30 12 * * *"
+    - cron: "30 13 * * *"
+    - cron: "30 14 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: masuda443-data-update
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    env:
+      MASUDA443_USER_AGENT: MASUDA443-FanSite/1.0 (+https://github.com/${{ github.repository }})
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: python -m pip install -r requirements.txt
+
+      - name: Run tests
+        run: python -m unittest discover -s tests -v
+
+      - name: Update data
+        id: data_update
+        continue-on-error: true
+        run: python update.py
+
+      - name: Commit changed data and fetch status
+        run: |
+          if git diff --quiet -- data.json fetch-status.json; then
+            echo "No data changes"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data.json fetch-status.json
+          git commit -m "chore: update baseball data status"
+          git push
+
+      - name: Report update failure
+        if: steps.data_update.outcome == 'failure'
+        run: exit 1

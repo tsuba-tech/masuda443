@@ -1,0 +1,83 @@
+{
+  "updated": "2026-09-16T13:20:54+09:00",
+  "source_status": "ok",
+  "last_successful_fetch": "2026-09-16T13:20:54+09:00",
+  "target_pa": 443,
+  "source": {
+    "site": "baseballdata.jp",
+    "masuda": "https://baseballdata.jp/cdrm.html",
+    "leader": "https://baseballdata.jp/ctop.html"
+  },
+  "masuda": {
+    "name": "増田 珠",
+    "team": "S",
+    "games": 110,
+    "pa": 392,
+    "ab": 356,
+    "hits": 104,
+    "doubles": 11,
+    "triples": 0,
+    "hr": 8,
+    "rbi": 35,
+    "walks": 29,
+    "hbp": 3,
+    "strikeouts": 64,
+    "stolen_bases": 4,
+    "avg": 0.29213483146067415,
+    "obp": 0.347,
+    "slg": 0.39,
+    "ops": 0.737
+  },
+  "leader": {
+    "name": "佐藤 輝明",
+    "team": "阪神",
+    "games": 127,
+    "pa": 542,
+    "ab": 476,
+    "hits": 150,
+    "avg": 0.31512605042016806,
+    "recent5_avg": 0.211,
+    "obp": 0.393,
+    "slg": 0.618,
+    "ops": 1.011
+  },
+  "recent": {
+    "last5": {
+      "games": 5,
+      "ab": 20,
+      "hits": 7,
+      "doubles": 1,
+      "triples": 0,
+      "hr": 1,
+      "walks_hbp": 0,
+      "strikeouts": 3,
+      "avg": 0.35
+    },
+    "last10": {
+      "games": 10,
+      "ab": 37,
+      "hits": 14,
+      "doubles": 1,
+      "triples": 0,
+      "hr": 1,
+      "walks_hbp": 2,
+      "strikeouts": 5,
+      "avg": 0.3783783783783784
+    },
+    "hit_streak": 7,
+    "latest_game": {
+      "date": "09/15",
+      "hits": 1,
+      "hr": 0,
+      "multi_hit_3": false
+    }
+  },
+  "derived": {
+    "remaining_pa": 51,
+    "progress": 88.48758465011286,
+    "avg_gap": 0.02299121895949391,
+    "adjusted_avg": 0.25552825552825553,
+    "adjusted_gap": 0.059597794891912526,
+    "status": "hot"
+  }
+}

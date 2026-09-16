@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="description" content="増田珠選手の規定打席443到達と首位打者争いを追う非公式応援ダッシュボード。">
+  <title>MASUDA 443｜増田珠選手、首位打者への道</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='8' fill='%230017c1'/%3E%3Cpath d='M12 47V17h8l12 17 12-17h8v30h-9V31L32 46 21 31v16z' fill='white'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="style.css">
+  <script src="app.js" defer></script>
+</head>
+<body class="mode-normal">
+  <div class="ambient" aria-hidden="true"></div>
+  <header class="site-header">
+    <a class="brand" href="#top" aria-label="MASUDA 443 トップ">
+      <span class="brand-mark">M</span>
+      <span><strong>MASUDA 443</strong><small>増田珠選手、首位打者への道</small></span>
+    </a>
+    <p class="header-status"><span class="status-dot"></span><span id="header-status">データ読込中</span></p>
+  </header>
+
+  <main id="top">
+    <div class="data-meta" aria-label="データ更新情報"><span>最終更新</span><time id="updated-at-top">----</time></div>
+    <section class="scoreboard" aria-labelledby="page-title">
+      <div class="scoreboard-copy">
+        <p class="eyebrow">規定打席への道</p>
+        <h1 id="page-title">MASUDA <span>443</span></h1>
+        <p class="creed">増田選手を信じて、<br>応燕します！</p>
+      </div>
+
+      <div class="qualification" aria-label="規定打席への進捗">
+        <p class="counter-label">2026年シーズンのNPB規定打席まで</p>
+        <div id="remaining-block" class="remaining-block">
+          <span>あと</span><strong id="remaining-pa">--</strong><span>打席</span>
+        </div>
+        <p id="reached-label" class="reached-label" hidden>規定打席到達</p>
+        <div class="progress-track" role="progressbar" aria-label="規定打席進捗" aria-valuemin="0" aria-valuemax="443" aria-valuenow="0">
+          <span id="progress-bar"></span>
+        </div>
+        <div class="progress-meta"><strong id="pa-progress">--- / 443</strong><span id="progress-percent">--%</span></div>
+        <p class="regulation-note">規定打席は「チーム試合数×3.1」を四捨五入。2026年は143試合制のため443打席です。</p>
+      </div>
+
+      <div class="first-view-stats">
+        <article class="primary-stat">
+          <p class="stat-label">増田珠選手</p>
+          <strong id="masuda-avg" class="big-average">.---</strong>
+          <p id="masuda-detail" class="stat-note">---安打 / ---打数</p>
+        </article>
+        <article class="leader-stat">
+          <p class="stat-label">現在の首位打者</p>
+          <strong id="leader-name">---</strong>
+          <span id="leader-avg">.---</span>
+          <p id="leader-gap" class="gap-chip">増田選手との差 .---</p>
+          <p class="leader-form">直近5試合の打率 <strong id="leader-recent5">.---</strong><span id="leader-form-label">確認中</span></p>
+          <div class="leader-race-box">
+            <p class="leader-race-title">逆転の目安</p>
+            <p id="leader-race-line" class="leader-race-line">残り打席から計算中</p>
+            <p id="leader-race-sub" class="leader-race-sub"></p>
+            <p class="leader-race-note">※首位打者の打率が現在のままの場合</p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="message-strip" aria-live="polite">
+      <span class="message-index">応援メッセージ</span>
+      <p id="main-message">増田選手の一打を待っています。</p>
+    </section>
+
+    <section class="dashboard-grid" aria-label="現在のコンディション">
+      <article class="panel adjusted-panel">
+        <div class="panel-heading"><p class="eyebrow">首位打者の特例</p><h2>規定未到達特例打率</h2></div>
+        <strong id="adjusted-avg" class="panel-value">.---</strong>
+        <div class="panel-footer"><span id="adjusted-state">首位との差</span><strong id="adjusted-gap">.---</strong></div>
+      </article>
+
+      <article class="panel recent-panel">
+        <div class="panel-heading"><p class="eyebrow">直近5試合</p><h2>直近コンディション</h2></div>
+        <strong id="last5-avg" class="panel-value">.---</strong>
+        <div class="recent-numbers">
+          <span><strong id="last5-hits">-</strong>安打</span>
+          <span><strong id="last5-hr">-</strong>HR</span>
+          <span><strong id="hit-streak">-</strong>試合連続安打</span>
+        </div>
+        <p id="last10-line" class="secondary-line">LAST 10　.---</p>
+      </article>
+
+      <article class="panel season-panel">
+        <div class="panel-heading"><p class="eyebrow">今季の記録</p><h2>シーズン成績</h2></div>
+        <dl class="stat-list">
+          <div><dt>OPS</dt><dd id="season-ops">.---</dd></div>
+          <div><dt>本塁打</dt><dd id="season-hr">--</dd></div>
+          <div><dt>打点</dt><dd id="season-rbi">--</dd></div>
+          <div><dt>安打</dt><dd id="season-hits">---</dd></div>
+        </dl>
+      </article>
+    </section>
+
+    <section class="sim-section" aria-labelledby="quick-sim-title">
+      <div class="section-heading"><p class="eyebrow">打率の変化を試算</p><h2 id="quick-sim-title">次の4打数で通算打率はどうなる？</h2><p>現在の通算成績に、次の4打数の結果を加えて計算します。</p></div>
+      <p id="quick-sim-context" class="quick-sim-context">現在の通算成績を読み込んでいます。</p>
+      <div id="quick-sim" class="quick-sim" aria-live="polite"></div>
+    </section>
+
+    <section class="sim-section title-race" aria-labelledby="race-title">
+      <div class="section-heading"><p class="eyebrow">現在の首位打者と比較</p><h2 id="race-title">首位逆転までの3シナリオ</h2><p id="race-assumption">残り打席をもとに計算しています。</p></div>
+      <div id="race-scenarios" class="race-scenarios" aria-live="polite"></div>
+      <p class="scenario-note">首位打者の打率が現在のままの場合の目安です。四球・死球などにより実際の打数は変わります。</p>
+    </section>
+
+    <section class="cheer-section" aria-labelledby="cheer-title">
+      <p class="eyebrow">応援を送る</p>
+      <h2 id="cheer-title">声を、力に。</h2>
+      <button id="cheer-button" class="cheer-button" type="button">マスダスゴイパワー</button>
+      <p>本日の「マスダスゴイパワー」：<strong id="cheer-count">0</strong>回</p>
+      <div id="cheer-layer" class="cheer-layer" aria-hidden="true"></div>
+    </section>
+  </main>
+
+  <footer>
+    <p class="site-version">MASUDA 443 v1.0.0</p>
+    <p>最終更新　<time id="updated-at">----</time></p>
+    <p>成績データ出典：<a href="https://baseballdata.jp/" target="_blank" rel="noopener noreferrer">baseballdata.jp</a></p>
+    <p>本サイトは非公式ファンサイトです。<br>東京ヤクルトスワローズ、NPB、選手本人、baseballdata.jpとは関係ありません。</p>
+  </footer>
+
+  <div id="load-error" class="load-error" role="alert" hidden>データ更新待ち</div>
+</body>
+</html>
