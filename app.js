@@ -144,6 +144,7 @@ function render(data) {
   setText("#masuda-avg", formatAverage(masuda.avg));
   setText("#masuda-detail", `${masuda.hits}安打 / ${masuda.ab}打数`);
   setText("#leader-name", withHonorific(leader.name));
+  setText("#leader-context-name", `${withHonorific(leader.name)}　通算打率 ${formatAverage(leader.avg)}`);
   setText("#leader-avg", formatAverage(leader.avg));
   setText("#leader-gap", masuda.avg >= leader.avg ? "増田選手が首位" : `増田選手との差 ${formatGap(leader.avg - masuda.avg)}`);
   setText("#leader-recent5", formatAverage(leader.recent5_avg));

@@ -261,9 +261,14 @@ body.mode-cold { --status: #4b5563; --status-bg: #f1f2f3; }
 
 @media (min-width: 48rem) {
   main { margin-top: 3rem; }
-  .scoreboard { grid-template-columns: .9fr 1.1fr; }
-  .scoreboard-copy { align-self: stretch; padding: 1rem 1.5rem 1rem 0; border-right: 1px solid var(--border); border-bottom: 0; }
-  .first-view-stats { grid-column: 1 / -1; }
+  .scoreboard { grid-template-columns: 1fr 1fr; }
+  .scoreboard-copy { grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; padding: 0 0 1.25rem; border-bottom: 1px solid var(--border); }
+  .scoreboard-copy .eyebrow { display: none; }
+  .scoreboard-copy h1 { font-size: 2.8rem; }
+  .scoreboard-copy h1 span { display: inline; }
+  .scoreboard-copy .creed { margin: 0; font-size: .875rem; }
+  .first-view-stats { grid-column: auto; }
+  .race-context { grid-template-columns: 1fr 1fr; }
   .pace-summary { grid-template-columns: 1fr 1fr; }
   .dashboard-grid { grid-template-columns: repeat(3, 1fr); }
   .quick-sim { grid-template-columns: repeat(5, minmax(0, 1fr)); }
@@ -273,8 +278,7 @@ body.mode-cold { --status: #4b5563; --status-bg: #f1f2f3; }
 }
 
 @media (min-width: 64rem) {
-  .scoreboard { grid-template-columns: .82fr 1.2fr 1fr; align-items: stretch; }
-  .scoreboard-copy { display: flex; flex-direction: column; justify-content: space-between; }
+  .scoreboard { grid-template-columns: 1fr 1fr; align-items: stretch; }
   .first-view-stats { grid-column: auto; }
   .qualification, .primary-stat, .leader-stat { padding: 1.4rem; }
   .dashboard-grid { grid-template-columns: repeat(3, 1fr); }
@@ -282,4 +286,15 @@ body.mode-cold { --status: #4b5563; --status-bg: #f1f2f3; }
   .panel-value { font-size: 4.25rem; }
   .sim-section { padding-top: 2rem; }
   .sim-cell { padding: 1rem .5rem; }
+}
+
+.race-link { display: block; margin-top: .85rem; font-size: .8rem; }
+.race-context { display: grid; gap: 1.25rem; padding: 1.25rem; margin-top: 1.25rem; border: 1px solid var(--border); background: var(--surface-subtle); }
+.race-context-name { margin: 0; font-weight: 700; }
+.race-context .leader-form { margin: .5rem 0 0; padding: 0; border: 0; font-size: .875rem; }
+.race-context .leader-race-box { margin: 0; }
+.race-context .leader-race-line { font-size: 1.125rem; }
+.race-context .leader-race-sub, .race-context .leader-race-note { font-size: .8rem; }
+@media (min-width: 48rem) {
+  .race-context { grid-template-columns: 1fr 1fr; }
 }
