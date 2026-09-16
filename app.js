@@ -174,7 +174,8 @@ function render(data) {
   setText("#last5-hits", recent.last5.hits);
   setText("#last5-hr", recent.last5.hr);
   setText("#hit-streak", recent.hit_streak);
-  setText("#last10-line", `LAST 10　${formatAverage(recent.last10.avg)}　${recent.last10.hits}安打`);
+  setText("#last10-avg", formatAverage(recent.last10.avg));
+  setText("#last10-hits", `${recent.last10.hits}安打`);
   setText("#season-ops", formatAverage(masuda.ops));
   setText("#season-hr", masuda.hr);
   setText("#season-rbi", masuda.rbi);

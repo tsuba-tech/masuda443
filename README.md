@@ -1,6 +1,6 @@
 # MASUDA 443
 
-Version: `v1.2.0`
+Version: `v1.3.0`
 
 東京ヤクルトスワローズ・増田珠選手の規定打席443到達および首位打者争いを追跡する、非公式ファンサイトです。
 
@@ -44,7 +44,7 @@ Windows PowerShellでは `$env:SCRAPING_ENABLED='false'; python update.py` と�
 
 ## GitHub Actions
 
-`.github/workflows/update.yml` は毎日、日本時間21:30・22:30・23:30に更新を実行します。Actions画面の `Run workflow` から手動実行もできます。データに差分がある場合だけコミットし、処理後に最新のサイトをGitHub Pagesへ公開します。
+`.github/workflows/update.yml` は毎日、日本時間17:00・21:00・21:30・22:30・23:30・翌1:00に更新を実行します。デイゲームとナイターの終了時刻を考慮した目安であり、GitHub Actionsの混雑状況により開始が遅れる場合があります。Actions画面の `Run workflow` から手動実行もできます。データに差分がある場合だけコミットし、処理後に最新のサイトをGitHub Pagesへ公開します。
 
 リポジトリの **Settings → Actions → General → Workflow permissions** で書き込み権限を許可してください。ワークフロー側にも `contents: write` を設定済みです。
 

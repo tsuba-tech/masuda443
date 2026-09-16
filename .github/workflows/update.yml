@@ -2,9 +2,12 @@ name: Update baseball data
 
 on:
   schedule:
+    - cron: "0 8 * * *"
+    - cron: "0 12 * * *"
     - cron: "30 12 * * *"
     - cron: "30 13 * * *"
     - cron: "30 14 * * *"
+    - cron: "0 16 * * *"
   workflow_dispatch:
 
 concurrency:
