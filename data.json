@@ -1,13 +1,14 @@
 {
-  "updated": "2026-09-16T13:57:58+09:00",
+  "updated": "2026-09-16T17:33:03+09:00",
   "source_status": "ok",
-  "last_successful_fetch": "2026-09-16T13:57:58+09:00",
+  "last_successful_fetch": "2026-09-16T17:33:03+09:00",
   "target_pa": 443,
   "team": {
     "name": "東京ヤクルトスワローズ",
     "season_games": 143,
     "games_played": 129,
-    "remaining_games": 14
+    "remaining_games": 14,
+    "current_regulation_pa": 400
   },
   "source": {
     "site": "baseballdata.jp",
@@ -81,6 +82,7 @@
   },
   "derived": {
     "remaining_pa": 51,
+    "current_regulation_remaining_pa": 8,
     "required_pa_per_game": 3.642857142857143,
     "progress": 88.48758465011286,
     "avg_gap": 0.02299121895949391,

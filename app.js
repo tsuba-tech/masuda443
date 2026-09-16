@@ -119,6 +119,12 @@ function render(data) {
   setText("#remaining-pa", derived.remaining_pa);
   setText("#pa-progress", `${masuda.pa} / ${target}`);
   setText("#progress-percent", `${derived.progress.toFixed(1)}%`);
+  if (Number.isFinite(data.team?.current_regulation_pa) && Number.isFinite(derived.current_regulation_remaining_pa)) {
+    const currentResult = derived.current_regulation_remaining_pa === 0
+      ? "現時点で到達"
+      : `あと${derived.current_regulation_remaining_pa}打席`;
+    setText("#current-qualification", `${data.team.games_played}試合消化時点の規定打席：${data.team.current_regulation_pa}（増田選手 ${masuda.pa}打席／${currentResult}）`);
+  }
   if (derived.remaining_pa === 0) {
     setText("#required-pace", "規定打席に到達しています");
   } else if (data.team?.remaining_games > 0 && Number.isFinite(derived.required_pa_per_game)) {

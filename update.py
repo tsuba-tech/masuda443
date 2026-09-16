@@ -344,6 +344,11 @@ def status_for(avg: float) -> str:
     return "cold"
 
 
+def regulation_pa_for_games(games: int) -> int:
+    """NPB regulation plate appearances: team games × 3.1, rounded half up."""
+    return int(games * 3.1 + 0.5)
+
+
 def validate(masuda: dict, leader: dict, games: list[GameLine], team_games_played: int) -> None:
     problems: list[str] = []
     if masuda["pa"] <= 0:
@@ -371,6 +376,7 @@ def validate(masuda: dict, leader: dict, games: list[GameLine], team_games_playe
 def build_payload(masuda: dict, leader: dict, games: list[GameLine], team_games_played: int) -> dict:
     remaining = max(TARGET_PA - masuda["pa"], 0)
     remaining_games = max(SEASON_GAMES - team_games_played, 0)
+    current_regulation_pa = regulation_pa_for_games(team_games_played)
     adjusted_avg = (
         masuda["hits"] / (masuda["ab"] + remaining)
         if remaining
@@ -391,6 +397,7 @@ def build_payload(masuda: dict, leader: dict, games: list[GameLine], team_games_
             "season_games": SEASON_GAMES,
             "games_played": team_games_played,
             "remaining_games": remaining_games,
+            "current_regulation_pa": current_regulation_pa,
         },
         "source": {
             "site": "baseballdata.jp",
@@ -413,6 +420,7 @@ def build_payload(masuda: dict, leader: dict, games: list[GameLine], team_games_
         },
         "derived": {
             "remaining_pa": remaining,
+            "current_regulation_remaining_pa": max(current_regulation_pa - masuda["pa"], 0),
             "required_pa_per_game": remaining / remaining_games if remaining_games else None,
             "progress": min(masuda["pa"] / TARGET_PA * 100, 100),
             "avg_gap": max(leader["avg"] - masuda["avg"], 0),

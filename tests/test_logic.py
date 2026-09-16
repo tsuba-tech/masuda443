@@ -1,6 +1,6 @@
 import unittest
 
-from update import GameLine, aggregate_games, build_payload, hitting_streak, parse_team_games, status_for
+from update import GameLine, aggregate_games, build_payload, hitting_streak, parse_team_games, regulation_pa_for_games, status_for
 
 
 def sample_player(pa=392, ab=356, hits=104):
@@ -48,6 +48,12 @@ class LogicTests(unittest.TestCase):
         payload = build_payload(sample_player(392), LEADER, GAMES, 129)
         self.assertEqual(payload["team"]["remaining_games"], 14)
         self.assertAlmostEqual(payload["derived"]["required_pa_per_game"], 51 / 14)
+
+    def test_current_regulation_plate_appearances(self):
+        self.assertEqual(regulation_pa_for_games(129), 400)
+        self.assertEqual(regulation_pa_for_games(143), 443)
+        payload = build_payload(sample_player(392), LEADER, GAMES, 129)
+        self.assertEqual(payload["derived"]["current_regulation_remaining_pa"], 8)
 
     def test_parse_team_games(self):
         html = """
