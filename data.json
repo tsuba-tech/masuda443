@@ -1,12 +1,19 @@
 {
-  "updated": "2026-09-16T13:20:54+09:00",
+  "updated": "2026-09-16T13:57:58+09:00",
   "source_status": "ok",
-  "last_successful_fetch": "2026-09-16T13:20:54+09:00",
+  "last_successful_fetch": "2026-09-16T13:57:58+09:00",
   "target_pa": 443,
+  "team": {
+    "name": "東京ヤクルトスワローズ",
+    "season_games": 143,
+    "games_played": 129,
+    "remaining_games": 14
+  },
   "source": {
     "site": "baseballdata.jp",
     "masuda": "https://baseballdata.jp/cdrm.html",
-    "leader": "https://baseballdata.jp/ctop.html"
+    "leader": "https://baseballdata.jp/ctop.html",
+    "team_standings": "https://baseballdata.jp/c/"
   },
   "masuda": {
     "name": "増田 珠",
@@ -74,6 +81,7 @@
   },
   "derived": {
     "remaining_pa": 51,
+    "required_pa_per_game": 3.642857142857143,
     "progress": 88.48758465011286,
     "avg_gap": 0.02299121895949391,
     "adjusted_avg": 0.25552825552825553,

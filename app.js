@@ -119,6 +119,13 @@ function render(data) {
   setText("#remaining-pa", derived.remaining_pa);
   setText("#pa-progress", `${masuda.pa} / ${target}`);
   setText("#progress-percent", `${derived.progress.toFixed(1)}%`);
+  if (derived.remaining_pa === 0) {
+    setText("#required-pace", "規定打席に到達しています");
+  } else if (data.team?.remaining_games > 0 && Number.isFinite(derived.required_pa_per_game)) {
+    setText("#required-pace", `チーム残り${data.team.remaining_games}試合で${derived.remaining_pa}打席 → 1試合平均 約${derived.required_pa_per_game.toFixed(2)}打席が必要`);
+  } else {
+    setText("#required-pace", "レギュラーシーズン終了時点で規定打席未到達");
+  }
   $("#progress-bar").style.width = `${derived.progress}%`;
   const progress = $(".progress-track");
   progress.setAttribute("aria-valuemax", target);
@@ -180,20 +187,8 @@ function render(data) {
   renderRace(data);
 }
 
-function cheerStorage() {
-  const today = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Tokyo" }).format(new Date());
-  const stored = JSON.parse(localStorage.getItem("masuda443-cheers") || "null");
-  if (!stored || stored.date !== today) return { date: today, count: 0 };
-  return stored;
-}
-
 function initCheer() {
-  let state = cheerStorage();
-  setText("#cheer-count", state.count);
   $("#cheer-button").addEventListener("click", () => {
-    state.count += 1;
-    localStorage.setItem("masuda443-cheers", JSON.stringify(state));
-    setText("#cheer-count", state.count);
     const layer = $("#cheer-layer");
     while (layer.children.length >= 50) layer.firstElementChild.remove();
     const pop = document.createElement("span");

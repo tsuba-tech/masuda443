@@ -27,7 +27,9 @@ from bs4 import BeautifulSoup, Tag
 BASE_URL = "https://baseballdata.jp/"
 MASUDA_URL = urljoin(BASE_URL, "cdrm.html")
 LEADER_URL = urljoin(BASE_URL, "ctop.html")
+TEAM_STANDINGS_URL = urljoin(BASE_URL, "c/")
 TARGET_PA = 443
+SEASON_GAMES = 143
 PLAYER_NAME = "増田珠"
 JST = timezone(timedelta(hours=9))
 OUTPUT_PATH = Path(__file__).with_name("data.json")
@@ -226,6 +228,16 @@ def parse_leader(html: str) -> dict:
     }
 
 
+def parse_team_games(html: str) -> int:
+    """Return the Swallows' completed team games from the league standings."""
+    soup = BeautifulSoup(html, "html.parser")
+    table = find_rank_table(soup, ["球団", "試"])
+    for row, _ in rows_as_dicts(table):
+        if normalize(pick(row, "球団")) in {"ヤクルト", "東京ヤクルト"}:
+            return as_int(pick(row, "試", "試合"), "Swallows team games")
+    raise UpdateError("Yakult was not found in the Central League standings")
+
+
 @dataclass
 class GameLine:
     date: str
@@ -283,6 +295,11 @@ def fetch_leader_stats(session: requests.Session) -> dict:
     return parse_leader(fetch(session, LEADER_URL))
 
 
+def fetch_team_games(session: requests.Session) -> int:
+    """Fetch the Swallows' completed team-game count."""
+    return parse_team_games(fetch(session, TEAM_STANDINGS_URL))
+
+
 def fetch_recent_stats(session: requests.Session, player_url: str) -> list[GameLine]:
     """Fetch only Masuda's plate-appearance page and aggregate it later."""
     plate_url = player_url.replace(".html", "S.html")
@@ -327,7 +344,7 @@ def status_for(avg: float) -> str:
     return "cold"
 
 
-def validate(masuda: dict, leader: dict, games: list[GameLine]) -> None:
+def validate(masuda: dict, leader: dict, games: list[GameLine], team_games_played: int) -> None:
     problems: list[str] = []
     if masuda["pa"] <= 0:
         problems.append("Masuda PA must be positive")
@@ -345,12 +362,15 @@ def validate(masuda: dict, leader: dict, games: list[GameLine]) -> None:
         problems.append("leader average is outside the expected range")
     if len(games) < 5:
         problems.append("fewer than five recent games were found")
+    if not 0 <= team_games_played <= SEASON_GAMES:
+        problems.append("Swallows team games are outside the expected range")
     if problems:
         raise UpdateError("; ".join(problems))
 
 
-def build_payload(masuda: dict, leader: dict, games: list[GameLine]) -> dict:
+def build_payload(masuda: dict, leader: dict, games: list[GameLine], team_games_played: int) -> dict:
     remaining = max(TARGET_PA - masuda["pa"], 0)
+    remaining_games = max(SEASON_GAMES - team_games_played, 0)
     adjusted_avg = (
         masuda["hits"] / (masuda["ab"] + remaining)
         if remaining
@@ -366,10 +386,17 @@ def build_payload(masuda: dict, leader: dict, games: list[GameLine]) -> dict:
         "source_status": "ok",
         "last_successful_fetch": fetched_at,
         "target_pa": TARGET_PA,
+        "team": {
+            "name": "東京ヤクルトスワローズ",
+            "season_games": SEASON_GAMES,
+            "games_played": team_games_played,
+            "remaining_games": remaining_games,
+        },
         "source": {
             "site": "baseballdata.jp",
             "masuda": MASUDA_URL,
             "leader": LEADER_URL,
+            "team_standings": TEAM_STANDINGS_URL,
         },
         "masuda": masuda,
         "leader": leader,
@@ -386,6 +413,7 @@ def build_payload(masuda: dict, leader: dict, games: list[GameLine]) -> dict:
         },
         "derived": {
             "remaining_pa": remaining,
+            "required_pa_per_game": remaining / remaining_games if remaining_games else None,
             "progress": min(masuda["pa"] / TARGET_PA * 100, 100),
             "avg_gap": max(leader["avg"] - masuda["avg"], 0),
             "adjusted_avg": adjusted_avg,
@@ -425,15 +453,16 @@ def main() -> None:
     session = requests.Session()
     session.headers.update({"User-Agent": USER_AGENT})
     try:
-        # Only these three data pages are fetched; this script never crawls the site.
+        # Only the required data pages are fetched; this script never crawls the site.
         robots = load_robots(session)
-        assert_robots_allowed(robots, [MASUDA_URL, LEADER_URL])
+        assert_robots_allowed(robots, [MASUDA_URL, LEADER_URL, TEAM_STANDINGS_URL])
         masuda, player_url = fetch_masuda_stats(session)
         assert_robots_allowed(robots, [player_url.replace(".html", "S.html")])
         leader = fetch_leader_stats(session)
+        team_games_played = fetch_team_games(session)
         games = fetch_recent_stats(session, player_url)
-        validate(masuda, leader, games)
-        payload = build_payload(masuda, leader, games)
+        validate(masuda, leader, games, team_games_played)
+        payload = build_payload(masuda, leader, games, team_games_played)
         atomic_write(payload)
         atomic_write({
             "source_status": "ok",

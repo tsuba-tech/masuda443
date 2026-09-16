@@ -1,6 +1,6 @@
 import unittest
 
-from update import GameLine, aggregate_games, build_payload, hitting_streak, status_for
+from update import GameLine, aggregate_games, build_payload, hitting_streak, parse_team_games, status_for
 
 
 def sample_player(pa=392, ab=356, hits=104):
@@ -36,13 +36,25 @@ GAMES = [
 
 class LogicTests(unittest.TestCase):
     def test_remaining_pa(self):
-        self.assertEqual(build_payload(sample_player(392), LEADER, GAMES)["derived"]["remaining_pa"], 51)
-        self.assertEqual(build_payload(sample_player(443), LEADER, GAMES)["derived"]["remaining_pa"], 0)
-        self.assertEqual(build_payload(sample_player(450), LEADER, GAMES)["derived"]["remaining_pa"], 0)
+        self.assertEqual(build_payload(sample_player(392), LEADER, GAMES, 129)["derived"]["remaining_pa"], 51)
+        self.assertEqual(build_payload(sample_player(443), LEADER, GAMES, 129)["derived"]["remaining_pa"], 0)
+        self.assertEqual(build_payload(sample_player(450), LEADER, GAMES, 129)["derived"]["remaining_pa"], 0)
 
     def test_adjusted_average(self):
         player = sample_player(pa=430, ab=400, hits=132)
-        self.assertAlmostEqual(build_payload(player, LEADER, GAMES)["derived"]["adjusted_avg"], 132 / 413)
+        self.assertAlmostEqual(build_payload(player, LEADER, GAMES, 129)["derived"]["adjusted_avg"], 132 / 413)
+
+    def test_required_plate_appearances_per_remaining_game(self):
+        payload = build_payload(sample_player(392), LEADER, GAMES, 129)
+        self.assertEqual(payload["team"]["remaining_games"], 14)
+        self.assertAlmostEqual(payload["derived"]["required_pa_per_game"], 51 / 14)
+
+    def test_parse_team_games(self):
+        html = """
+        <table><thead><tr><th>#</th><th>球団</th><th>試</th></tr></thead>
+        <tbody><tr><td>4</td><td>ヤクルト</td><td>129</td></tr></tbody></table>
+        """
+        self.assertEqual(parse_team_games(html), 129)
 
     def test_last_five_and_status(self):
         games = [GameLine(f"09/{i:02}", ab, hits, 0, 0, 0) for i, ab, hits in [(5,4,2),(4,4,2),(3,4,2),(2,4,1),(1,3,1)]]
