@@ -289,7 +289,9 @@ function renderLivePanel(live) {
   section.hidden = false;
   const { pa, ab, hits, hr } = live.totals;
   setText("#live-line", `${pa}打席 ${ab}打数 ${hits}安打${hr ? ` ${hr}本塁打` : ""}`);
-  setText("#live-note", live.note || "");
+  // 試合名は任意。入力が無くても文脈がわかるよう、日付は常に自分で出す。
+  const day = live.date ? live.date.slice(5).replace("-", "/").replace(/^0/, "") : "";
+  setText("#live-note", [day, live.note].filter(Boolean).join("・"));
   const list = $("#live-entries");
   list.replaceChildren();
   live.entries.forEach((entry, index) => {
