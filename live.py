@@ -55,6 +55,7 @@ def totals(entries: list[dict]) -> dict[str, int]:
     return summary
 
 
+PLACEHOLDER = "選択してください"
 UNDO = "直前を取り消す"
 CLEAR = "本日分をクリア"
 
@@ -72,6 +73,12 @@ def apply(state: dict, command: str, note: str, now: datetime) -> dict:
     if note:
         state["note"] = note
 
+    # 値が渡らなかった場合にここへ落ちる。黙って既定の打席結果を
+    # 記録すると公開中の数字が嘘になるので、必ず失敗させる。
+    if command in ("", PLACEHOLDER):
+        raise SystemExit(
+            "command was not supplied. ショートカットの変数が渡っていません。"
+        )
     if command == CLEAR:
         return empty_state(game_date, note)
     if command == UNDO:

@@ -48,6 +48,13 @@ class LiveEntryTests(unittest.TestCase):
         self.state = live.apply(self.state, "本日分をクリア", "", self.now)
         self.assertEqual(self.state["entries"], [])
 
+    def test_missing_command_fails_instead_of_recording_a_hit(self):
+        # 値が渡らないときに既定の打席結果を記録してしまうと、
+        # 公開中の数字が実在しない成績になる
+        for command in ("", "選択してください"):
+            with self.assertRaises(SystemExit):
+                live.apply(live.empty_state("2026-09-17"), command, "", self.now)
+
     def test_a_new_day_does_not_inherit_yesterday(self):
         self.add("安打", "安打")
         tomorrow = self.now + timedelta(days=1)
