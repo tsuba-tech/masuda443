@@ -227,7 +227,9 @@ function renderRace(data) {
   paceLeader.append(compareRow(`最終想定（残り約${projection.paceProjectedAB}打数）`, formatAverage(projection.paceLeaderAvg), true));
   paceCard.append(paceLeader, compareMasudaBlock(projection.paceNeed, projection.projectedAB));
   const leaderTeam = leader.team || "所属球団";
-  paceCard.append(el("p", "compare-note", `※予測ではなく、${compactHonorific(leader.name)}について${leaderTeam}の残り${projection.paceRemainingGames}試合を、直近5試合の打撃ペースで延長した仮定シナリオです。`));
+  // 「残りN試合」は増田選手側の残り試合数と取り違えられやすいので、
+  // 誰がどの球団の残り試合を消化する話なのかを主語ごと明示する。
+  paceCard.append(el("p", "compare-note", `※予測ではなく、${compactHonorific(leader.name)}が${leaderTeam}の残り${projection.paceRemainingGames}試合を直近5試合の打撃ペースで消化した場合の仮定シナリオです。`));
 
   container.append(currentCard, paceCard);
 }
