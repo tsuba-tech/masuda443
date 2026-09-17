@@ -24,6 +24,27 @@ function formatTimestamp(date) {
   }).format(date);
 }
 
+/**
+ * 表示中の成績が「いつまでの試合」のものかを表すラベルを作る。
+ * 取得元は未明（3〜7時台）に前日までの試合を反映して生成されるため、
+ * 生成日の前日が対象日になる。閲覧者のタイムゾーンに影響されないよう
+ * 日付の判定は日本時間で行う。
+ * @param {string|null|undefined} sourceModified 取得元の Last-Modified（ISO文字列）
+ * @returns {string} 例 "9/16 終了時点"。判定できないときは空文字。
+ */
+function dataBasisLabel(sourceModified) {
+  if (!sourceModified) return "";
+  const date = new Date(sourceModified);
+  if (Number.isNaN(date.getTime())) return "";
+  const parts = Object.fromEntries(new Intl.DateTimeFormat("en-US", {
+    timeZone: "Asia/Tokyo", year: "numeric", month: "2-digit", day: "2-digit",
+    hour: "2-digit", hour12: false,
+  }).formatToParts(date).map((part) => [part.type, part.value]));
+  const basis = new Date(Date.UTC(Number(parts.year), Number(parts.month) - 1, Number(parts.day)));
+  if (Number(parts.hour) < 12) basis.setUTCDate(basis.getUTCDate() - 1);
+  return `${basis.getUTCMonth() + 1}/${basis.getUTCDate()} 終了時点`;
+}
+
 function setText(selector, value) {
   const element = $(selector);
   if (element) element.textContent = value;
@@ -343,6 +364,10 @@ function render(data) {
   const sourceModified = data.source?.last_modified ? new Date(data.source.last_modified) : null;
   const sourceLabel = sourceModified ? formatTimestamp(sourceModified) : "取得元の更新時刻は不明";
   setText("#source-updated-at-foot", sourceLabel);
+  const basisNode = $("#data-basis");
+  const basisLabel = dataBasisLabel(data.source?.last_modified);
+  basisNode.hidden = !basisLabel;
+  basisNode.textContent = basisLabel ? `${basisLabel}の成績` : "";
 
   const updated = new Date(data.updated);
   setText("#updated-at", formatTimestamp(updated));

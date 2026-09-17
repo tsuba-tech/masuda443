@@ -156,6 +156,8 @@ h1 span { display: block; color: var(--blue-1000); }
 .progress-track span { display: block; width: 0; height: 100%; border-radius: inherit; background: var(--blue-1000); transition: width .6s ease; }
 .progress-meta { display: flex; justify-content: space-between; gap: 1rem; margin-top: .55rem; color: var(--ink-subtle); font-size: .8rem; }
 .progress-meta strong { color: var(--ink); }
+/* 大きな数字がいつ時点のものかを一行だけ添える。スペースを食わないよう最小限にする */
+.data-basis { margin: .3rem 0 0; color: var(--ink-subtle); font-size: .7rem; line-height: 1.4; }
 .regulation-note { margin: .9rem 0 0; color: var(--ink-subtle); font-size: .75rem; line-height: 1.6; }
 
 .qualification-outlook { margin-top: .75rem; padding: 1rem; border: 1px solid var(--border); background: var(--surface); }
