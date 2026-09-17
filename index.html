@@ -7,8 +7,8 @@
   <meta name="description" content="2026年シーズン、増田珠選手の規定打席443到達と首位打者争いを追う非公式応援ダッシュボード。">
   <title>MASUDA 443｜2026年シーズン 増田珠選手、首位打者への道</title>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='8' fill='%230017c1'/%3E%3Cpath d='M12 47V17h8l12 17 12-17h8v30h-9V31L32 46 21 31v16z' fill='white'/%3E%3C/svg%3E">
-  <link rel="stylesheet" href="style.css?v=1.5.11">
-  <script src="app.js?v=1.5.11" defer></script>
+  <link rel="stylesheet" href="style.css?v=1.6.0">
+  <script src="app.js?v=1.6.0" defer></script>
 </head>
 <body class="mode-normal">
   <div class="ambient" aria-hidden="true"></div>
@@ -77,6 +77,14 @@
       <details><summary>計算条件を見る</summary><p id="qualification-conditions">データを読み込んでいます。</p></details>
     </section>
 
+    <section id="live-strip" class="live-strip" aria-live="polite" hidden>
+      <p class="live-index">本日の速報</p>
+      <p id="live-line" class="live-line">--</p>
+      <p id="live-note" class="live-note"></p>
+      <ul id="live-entries" class="live-entries"></ul>
+      <p class="live-caution">※管理人が観戦しながら手入力した暫定値です。確定成績は翌朝に反映され、この欄は消えます。</p>
+    </section>
+
     <section class="message-strip" aria-live="polite">
       <span class="message-index">応援メッセージ</span>
       <p id="main-message">増田選手の一打を待っています。</p>
@@ -99,6 +107,7 @@
           <span><strong id="hit-streak">-</strong>試合連続安打</span>
         </div>
         <div class="last10-summary"><span>直近10試合</span><strong id="last10-avg">.---</strong><small id="last10-hits">--安打</small></div>
+        <p id="recent-basis-note" class="basis-note"></p>
       </article>
 
       <article class="panel season-panel">
@@ -109,6 +118,7 @@
           <div><dt>打点</dt><dd id="season-rbi">--</dd></div>
           <div><dt>安打</dt><dd id="season-hits">---</dd></div>
         </dl>
+        <p id="season-basis-note" class="basis-note"></p>
       </article>
     </section>
 
@@ -137,7 +147,7 @@
   </main>
 
   <footer>
-    <p class="site-version">MASUDA 443 v1.5.11</p>
+    <p class="site-version">MASUDA 443 v1.6.0</p>
     <p>データ基準　<time id="source-updated-at-foot">----</time>（データで楽しむプロ野球の更新時点）</p>
     <p>当サイト取得　<time id="updated-at">----</time></p>
     <p>成績データ出典：<a href="https://baseballdata.jp/" target="_blank" rel="noopener noreferrer">baseballdata.jp</a></p>

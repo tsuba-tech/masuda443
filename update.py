@@ -30,6 +30,9 @@ from bs4 import BeautifulSoup, Tag
 # 月曜など試合のない日をまたいでも誤検知しないよう、丸3日に余裕を持たせている。
 SOURCE_STALE_HOURS = 72
 
+# 手入力の速報を保持するファイル。確定データが追いついたら空にする。
+LIVE_PATH = Path(__file__).with_name("live.json")
+
 BASE_URL = "https://baseballdata.jp/"
 MASUDA_URL = urljoin(BASE_URL, "cdrm.html")
 LEADER_URL = urljoin(BASE_URL, "ctop.html")
@@ -533,6 +536,46 @@ def build_payload(
     }
 
 
+def clear_live_overlay_if_covered(basis_date: str, path: Path = LIVE_PATH) -> bool:
+    """Empty the manual live overlay once confirmed data covers that game day.
+
+    速報は確定データが来るまでの一時的な上乗せなので、取得元が
+    その日の試合を取り込んだ時点で役目を終える。
+    """
+    try:
+        state = json.loads(path.read_text(encoding="utf-8"))
+    except (FileNotFoundError, json.JSONDecodeError):
+        return False
+    live_date = state.get("date") or ""
+    if not live_date or not state.get("entries"):
+        return False
+    if live_date > basis_date:
+        return False
+    path.write_text(
+        json.dumps(
+            {"date": "", "note": "", "entries": [], "updated": None,
+             "totals": {"pa": 0, "ab": 0, "hits": 0, "hr": 0}},
+            ensure_ascii=False, indent=2,
+        ) + "\n",
+        encoding="utf-8",
+    )
+    return True
+
+
+def confirmed_basis_date(source_last_modified: datetime | None) -> str:
+    """Return the last game day the confirmed data covers, as YYYY-MM-DD.
+
+    取得元は未明に前日までの試合を反映して生成されるため、
+    生成が午前中なら前日ぶんまでが対象になる。
+    """
+    if source_last_modified is None:
+        return ""
+    basis = source_last_modified.astimezone(JST)
+    if basis.hour < 12:
+        basis -= timedelta(days=1)
+    return basis.strftime("%Y-%m-%d")
+
+
 def atomic_write(payload: dict, path: Path = OUTPUT_PATH) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     fd, temp_name = tempfile.mkstemp(prefix="data-", suffix=".json", dir=path.parent)
@@ -598,6 +641,9 @@ def main() -> None:
                         SOURCE_STALE_HOURS, source_last_modified)
             print(f"::warning::source data appears stale (last modified {source_last_modified})")
         atomic_write(payload)
+        basis_date = confirmed_basis_date(source_last_modified)
+        if basis_date and clear_live_overlay_if_covered(basis_date):
+            LOG.info("cleared the manual live overlay; confirmed data now covers %s", basis_date)
         atomic_write({
             "source_status": "ok",
             "attempted": payload["updated"],

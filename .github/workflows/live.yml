@@ -1,0 +1,112 @@
+name: Live plate appearance
+
+# 観戦しながら 1 打席ずつ手入力するための入り口。
+# 起動できるのは workflow_dispatch のみで、実行にはリポジトリへの
+# 書き込み権限が要る。サイト側に入力フォームは置かないので、
+# 閲覧者がここに書き込む経路は存在しない。
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        description: "操作"
+        type: choice
+        required: true
+        default: "打席を追加"
+        options:
+          - "打席を追加"
+          - "直前を取り消す"
+          - "本日分をクリア"
+      result:
+        description: "打席結果（追加のときだけ使用）"
+        type: choice
+        required: true
+        default: "安打"
+        options:
+          - "安打"
+          - "二塁打"
+          - "三塁打"
+          - "本塁打"
+          - "四球"
+          - "死球"
+          - "犠打"
+          - "犠飛"
+          - "凡退"
+          - "三振"
+          - "失策出塁"
+      note:
+        description: "試合名など（任意・例: 神宮 DeNA戦）"
+        type: string
+        required: false
+        default: ""
+
+# 連打しても取りこぼさないよう、順番に処理する
+concurrency:
+  group: masuda443-live
+  cancel-in-progress: false
+
+jobs:
+  record:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Record the plate appearance
+        env:
+          INPUT_ACTION: ${{ inputs.action }}
+          INPUT_RESULT: ${{ inputs.result }}
+          INPUT_NOTE: ${{ inputs.note }}
+        run: |
+          case "$INPUT_ACTION" in
+            "打席を追加")    ACTION=add ;;
+            "直前を取り消す") ACTION=undo ;;
+            "本日分をクリア") ACTION=clear ;;
+            *) echo "unknown action: $INPUT_ACTION"; exit 1 ;;
+          esac
+          python live.py --action "$ACTION" --result "$INPUT_RESULT" --note "$INPUT_NOTE"
+
+      - name: Commit
+        run: |
+          if git diff --quiet -- live.json; then
+            echo "No change"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add live.json
+          git commit -m "chore: record a live plate appearance"
+          git push
+
+  # GITHUB_TOKEN による push は他のワークフローを起動しないため、
+  # ここでデプロイまで面倒を見る。
+  deploy:
+    needs: record
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout latest main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+      - name: Upload site artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+      - name: Deploy GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

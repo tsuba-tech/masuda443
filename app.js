@@ -2,6 +2,7 @@
 
 const $ = (selector) => document.querySelector(selector);
 let currentData = null;
+let currentLive = null;
 
 function formatAverage(value) {
   if (!Number.isFinite(value)) return ".---";
@@ -30,7 +31,7 @@ function formatTimestamp(date) {
  * 生成日の前日が対象日になる。閲覧者のタイムゾーンに影響されないよう
  * 日付の判定は日本時間で行う。
  * @param {string|null|undefined} sourceModified 取得元の Last-Modified（ISO文字列）
- * @returns {string} 例 "9/16 終了時点"。判定できないときは空文字。
+ * @returns {string} 例 "9/16"。判定できないときは空文字。
  */
 function dataBasisLabel(sourceModified) {
   if (!sourceModified) return "";
@@ -42,7 +43,70 @@ function dataBasisLabel(sourceModified) {
   }).formatToParts(date).map((part) => [part.type, part.value]));
   const basis = new Date(Date.UTC(Number(parts.year), Number(parts.month) - 1, Number(parts.day)));
   if (Number(parts.hour) < 12) basis.setUTCDate(basis.getUTCDate() - 1);
-  return `${basis.getUTCMonth() + 1}/${basis.getUTCDate()} 終了時点`;
+  return `${basis.getUTCMonth() + 1}/${basis.getUTCDate()}`;
+}
+
+/**
+ * 手入力の速報を確定データに上乗せした data を返す。
+ *
+ * 動かすのは増田選手の打席・打数・安打・本塁打だけ。首位打者の成績、打点、
+ * OPS、直近5試合は観戦中に確定できないため確定値のまま据え置く。
+ * 確定データが速報の試合日に追いついている場合は、速報を破棄する。
+ *
+ * @param {object} data data.json の中身
+ * @param {object|null} live live.json の中身
+ * @returns {{data: object, live: ?object}} 合成後のデータと、採用した速報
+ */
+function mergeLiveOverlay(data, live) {
+  const totals = live?.totals;
+  if (!live?.date || !totals?.pa) return { data, live: null };
+  // 確定データが既にその日を含んでいるなら速報は用済み
+  const basis = confirmedBasisDate(data.source?.last_modified);
+  if (basis && basis >= live.date) return { data, live: null };
+
+  const merged = structuredClone(data);
+  const masuda = merged.masuda;
+  masuda.pa += totals.pa;
+  masuda.ab += totals.ab;
+  masuda.hits += totals.hits;
+  masuda.hr += totals.hr;
+  masuda.avg = masuda.ab > 0 ? masuda.hits / masuda.ab : 0;
+
+  const remaining = Math.max(merged.target_pa - masuda.pa, 0);
+  merged.derived.remaining_pa = remaining;
+  merged.derived.progress = Math.min((masuda.pa / merged.target_pa) * 100, 100);
+  merged.derived.current_regulation_remaining_pa =
+    Math.max(merged.team.current_regulation_pa - masuda.pa, 0);
+  merged.derived.avg_gap = Math.max(merged.leader.avg - masuda.avg, 0);
+  merged.derived.adjusted_avg = remaining > 0
+    ? masuda.hits / (masuda.ab + remaining)
+    : masuda.avg;
+  merged.derived.adjusted_gap = merged.leader.avg - merged.derived.adjusted_avg;
+  const remainingGames = merged.team.remaining_games;
+  merged.derived.required_pa_per_game = remainingGames ? remaining / remainingGames : null;
+
+  // 本日1本でも打っていれば連続安打は確実に1試合伸びる。
+  // 逆に無安打でもまだ打席が残っている可能性があるため、途切れた判定はしない。
+  if (totals.hits > 0) merged.recent.hit_streak += 1;
+  return { data: merged, live };
+}
+
+/**
+ * 確定データが対象にしている最終試合日を YYYY-MM-DD で返す。
+ * @param {string|null|undefined} sourceModified
+ * @returns {string}
+ */
+function confirmedBasisDate(sourceModified) {
+  if (!sourceModified) return "";
+  const date = new Date(sourceModified);
+  if (Number.isNaN(date.getTime())) return "";
+  const parts = Object.fromEntries(new Intl.DateTimeFormat("en-US", {
+    timeZone: "Asia/Tokyo", year: "numeric", month: "2-digit", day: "2-digit",
+    hour: "2-digit", hour12: false,
+  }).formatToParts(date).map((part) => [part.type, part.value]));
+  const basis = new Date(Date.UTC(Number(parts.year), Number(parts.month) - 1, Number(parts.day)));
+  if (Number(parts.hour) < 12) basis.setUTCDate(basis.getUTCDate() - 1);
+  return basis.toISOString().slice(0, 10);
 }
 
 function setText(selector, value) {
@@ -210,6 +274,30 @@ function compareMasudaBlock(need, projectedAB) {
   return block;
 }
 
+/**
+ * 本日の手入力速報を専用の帯に出す。速報が無い日は帯ごと隠す。
+ * メインの数字にも speculation が乗っているため、暫定である旨を必ず添える。
+ * @param {?object} live
+ */
+function renderLivePanel(live) {
+  const section = $("#live-strip");
+  if (!section) return;
+  if (!live) {
+    section.hidden = true;
+    return;
+  }
+  section.hidden = false;
+  const { pa, ab, hits, hr } = live.totals;
+  setText("#live-line", `${pa}打席 ${ab}打数 ${hits}安打${hr ? ` ${hr}本塁打` : ""}`);
+  setText("#live-note", live.note || "");
+  const list = $("#live-entries");
+  list.replaceChildren();
+  live.entries.forEach((entry, index) => {
+    const item = el("li", null, `${index + 1}打席目 ${entry.result}`);
+    list.append(item);
+  });
+}
+
 function renderRace(data) {
   const { leader } = data;
   const projection = raceProjection(data);
@@ -294,8 +382,9 @@ function renderQualificationOutlook(data) {
   setText("#qualification-conditions", `今季${data.masuda.pa}打席 ÷ チーム${data.team.games_played}試合 = 1試合平均${result.average.toFixed(2)}打席（欠場込み）。残り${data.team.remaining_games}試合で平均${result.mean.toFixed(1)}打席を積み上げると仮定し、合計${data.target_pa}打席に届く割合をポアソン分布で計算しています。今後も同じペースが続き、各試合の打席数は独立に変動する簡易モデルです。直近の起用・けが・打順変更は反映しておらず、実際の到達確率を保証するものではありません。`);
 }
 
-function render(data) {
+function render(data, live = null) {
   currentData = data;
+  currentLive = live;
   const { masuda, leader, recent, derived, target_pa: target } = data;
   document.body.className = `mode-${derived.status}`;
   setText("#header-status", derived.status === "god" ? "覚醒中" : derived.status === "hot" ? "好調" : derived.status === "cold" ? "復活待機" : "追跡中");
@@ -366,8 +455,22 @@ function render(data) {
   setText("#source-updated-at-foot", sourceLabel);
   const basisNode = $("#data-basis");
   const basisLabel = dataBasisLabel(data.source?.last_modified);
-  basisNode.hidden = !basisLabel;
-  basisNode.textContent = basisLabel ? `${basisLabel}の成績` : "";
+  if (live) {
+    basisNode.hidden = false;
+    basisNode.textContent = basisLabel
+      ? `${basisLabel}終了時点の確定成績 ＋ 本日${live.totals.pa}打席（速報）`
+      : `本日${live.totals.pa}打席の速報を含む`;
+  } else {
+    basisNode.hidden = !basisLabel;
+    basisNode.textContent = basisLabel ? `${basisLabel}終了時点の成績` : "";
+  }
+  // 速報から導けない指標は確定値のままなので、どこまでの成績かを日付で明示する。
+  // 日付は取得元の更新に追従して自動で動く。
+  setText("#recent-basis-note", basisLabel ? `※${basisLabel}までの成績` : "");
+  setText("#season-basis-note", basisLabel
+    ? (live ? `※OPS・打点は${basisLabel}までの成績` : `※${basisLabel}までの成績`)
+    : "");
+  renderLivePanel(live);
 
   const updated = new Date(data.updated);
   setText("#updated-at", formatTimestamp(updated));
@@ -421,7 +524,17 @@ async function init() {
   try {
     const response = await fetch(`data.json?t=${Date.now()}`, { cache: "no-store" });
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    render(await response.json());
+    const confirmed = await response.json();
+    // 速報は無くても成立するので、読めなくても確定データだけで描画する
+    let live = null;
+    try {
+      const liveResponse = await fetch(`live.json?t=${Date.now()}`, { cache: "no-store" });
+      if (liveResponse.ok) live = await liveResponse.json();
+    } catch (error) {
+      console.info("live.json is not available", error);
+    }
+    const merged = mergeLiveOverlay(confirmed, live);
+    render(merged.data, merged.live);
     await loadFetchStatus();
   } catch (error) {
     console.error("Failed to load data.json", error);
