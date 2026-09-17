@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="description" content="2026年シーズン、奥川恭伸投手・山野太一投手の規定投球回143到達を追う非公式応援ダッシュボード。">
+  <title>OKUGAWA 143 ／ YAMANO 143｜2026年シーズン 規定投球回への道</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='8' fill='%230017c1'/%3E%3Cpath d='M12 47V17h8l12 17 12-17h8v30h-9V31L32 46 21 31v16z' fill='white'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="style.css?v=1.8.0">
+  <script src="pitchers.js?v=1.8.0" defer></script>
+</head>
+<body class="mode-normal">
+  <header class="site-header">
+    <a class="brand" href="./" aria-label="MASUDA 443 トップ">
+      <span class="brand-mark">M</span>
+      <span><strong>MASUDA 443</strong><small>2026年シーズン｜規定到達への道</small></span>
+    </a>
+  </header>
+
+  <nav class="counter-tabs" aria-label="カウンター切替">
+    <a href="./">MASUDA <b>443</b></a>
+    <a href="#okugawa" class="is-current" aria-current="page">OKUGAWA <b>143</b></a>
+    <a href="#yamano">YAMANO <b>143</b></a>
+  </nav>
+
+  <main id="top">
+    <div class="section-heading pitchers-heading">
+      <p class="eyebrow">規定投球回への道</p>
+      <h1 id="page-title">規定投球回 143</h1>
+      <p>規定投球回は「チーム試合数×1.0」。2026年は143試合制のため143イニングです。</p>
+    </div>
+    <p id="pitchers-basis" class="data-basis"></p>
+
+    <div id="pitchers" class="pitcher-list" aria-live="polite">
+      <p class="pitcher-loading">投手成績を読み込んでいます。</p>
+    </div>
+  </main>
+
+  <footer>
+    <p class="site-version">MASUDA 443 v1.8.0</p>
+    <p>データ基準　<time id="source-updated-at-foot">----</time>（データで楽しむプロ野球の更新時点）</p>
+    <p>当サイト取得　<time id="updated-at">----</time></p>
+    <p>成績データ出典：<a href="https://baseballdata.jp/" target="_blank" rel="noopener noreferrer">baseballdata.jp</a></p>
+    <p>本サイトは非公式ファンサイトです。<br>東京ヤクルトスワローズ、NPB、選手本人、baseballdata.jpとは関係ありません。</p>
+  </footer>
+
+  <div id="load-error" class="load-error" role="alert" hidden>データ更新待ち</div>
+</body>
+</html>

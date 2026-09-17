@@ -88,6 +88,34 @@ button, summary, a { -webkit-tap-highlight-color: transparent; }
 .status-dot { width: .5rem; height: .5rem; border-radius: 50%; background: currentColor; }
 
 main { width: min(100% - 2rem, var(--max-width)); margin: 1rem auto 0; }
+/* カウンター切替タブ。横に並べきれない幅では横スクロールさせる */
+.counter-tabs { display: flex; gap: .5rem; width: min(100% - 2rem, var(--max-width)); margin: 1rem auto 0; overflow-x: auto; }
+.counter-tabs a { flex: 0 0 auto; padding: .55rem .9rem; border: 1px solid var(--border-strong); border-radius: .25rem; background: var(--surface); color: var(--ink-subtle); font-size: .8rem; font-weight: 700; text-decoration: none; white-space: nowrap; }
+.counter-tabs a b { color: var(--blue-1000); }
+.counter-tabs a.is-current { border-color: var(--blue-1000); background: var(--blue-1000); color: #fff; }
+.counter-tabs a.is-current b { color: #fff; }
+
+.pitchers-heading { width: min(100%, var(--max-width)); margin-top: 1.5rem; }
+.pitchers-heading h1 { font-size: clamp(1.5rem, 6vw, 2rem); line-height: 1.4; white-space: normal; letter-spacing: normal; }
+.pitcher-list { display: grid; gap: 1.25rem; margin-top: 1.25rem; }
+.pitcher-card { padding: 1.25rem; border: 1px solid var(--border); border-left: .5rem solid var(--blue-1000); background: var(--surface-subtle); scroll-margin-top: 1rem; }
+.pitcher-title { margin: .1rem 0 0; color: var(--ink); font-size: clamp(1.6rem, 8vw, 2.4rem); font-weight: 700; line-height: 1.1; letter-spacing: -.03em; }
+.pitcher-title span { color: var(--blue-1000); }
+.pitcher-name { margin: .25rem 0 0; color: var(--ink-subtle); font-size: .8rem; font-weight: 700; }
+.pitcher-counter { display: flex; align-items: baseline; gap: .6rem; margin: .9rem 0 .75rem; }
+.pitcher-counter span { color: var(--ink); font-size: .95rem; font-weight: 700; }
+.pitcher-counter strong { color: var(--blue-1000); font-size: clamp(3rem, 16vw, 4.75rem); font-weight: 700; line-height: .95; letter-spacing: -.05em; }
+.pitcher-reached { color: var(--success); font-size: clamp(1.5rem, 7vw, 2.25rem); letter-spacing: -.02em; }
+.pitcher-stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .6rem 1rem; margin: 1rem 0 0; padding: .9rem 0 0; border-top: 1px solid var(--border); }
+.pitcher-stat dt { color: var(--ink-subtle); font-size: .72rem; font-weight: 700; }
+.pitcher-stat dd { margin: .1rem 0 0; color: var(--ink); font-size: 1.3rem; font-weight: 700; }
+.pitcher-note { margin: .85rem 0 0; color: var(--ink-subtle); font-size: .72rem; line-height: 1.6; }
+.pitcher-loading { margin: 0; color: var(--ink-subtle); font-size: .875rem; }
+@media (min-width: 48rem) {
+  .pitcher-list { grid-template-columns: 1fr 1fr; }
+  .pitcher-stats { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+
 .scoreboard {
   display: grid;
   gap: 1.5rem;

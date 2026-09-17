@@ -1,7 +1,7 @@
 {
-  "updated": "2026-09-17T09:39:04+09:00",
+  "updated": "2026-09-17T12:44:55+09:00",
   "source_status": "ok",
-  "last_successful_fetch": "2026-09-17T09:39:04+09:00",
+  "last_successful_fetch": "2026-09-17T12:44:55+09:00",
   "target_pa": 443,
   "team": {
     "name": "東京ヤクルトスワローズ",
@@ -17,7 +17,8 @@
     "stale": false,
     "masuda": "https://baseballdata.jp/cdrm.html",
     "leader": "https://baseballdata.jp/ctop.html",
-    "team_standings": "https://baseballdata.jp/c/"
+    "team_standings": "https://baseballdata.jp/c/",
+    "pitchers": "https://baseballdata.jp/cptop.html"
   },
   "masuda": {
     "name": "増田 珠",
@@ -39,6 +40,39 @@
     "slg": 0.39,
     "ops": 0.737
   },
+  "target_innings": 143,
+  "pitchers": [
+    {
+      "name": "奥川 恭伸",
+      "team": "ヤクルト",
+      "era": 2.76,
+      "wins": 7,
+      "losses": 8,
+      "games": 20,
+      "strikeouts": 107,
+      "innings": 137.0,
+      "innings_text": "137",
+      "remaining_innings": 6.0,
+      "remaining_innings_text": "6",
+      "progress": 95.8041958041958,
+      "current_regulation_innings": 129
+    },
+    {
+      "name": "山野 太一",
+      "team": "ヤクルト",
+      "era": 2.43,
+      "wins": 10,
+      "losses": 4,
+      "games": 22,
+      "strikeouts": 134,
+      "innings": 140.66666666666666,
+      "innings_text": "140 2/3",
+      "remaining_innings": 2.333333333333343,
+      "remaining_innings_text": "2 1/3",
+      "progress": 98.36829836829835,
+      "current_regulation_innings": 129
+    }
+  ],
   "leader": {
     "name": "佐藤 輝明",
     "team": "阪神",

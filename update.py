@@ -36,6 +36,7 @@ LIVE_PATH = Path(__file__).with_name("live.json")
 BASE_URL = "https://baseballdata.jp/"
 MASUDA_URL = urljoin(BASE_URL, "cdrm.html")
 LEADER_URL = urljoin(BASE_URL, "ctop.html")
+PITCHER_URL = urljoin(BASE_URL, "cptop.html")
 TEAM_STANDINGS_URL = urljoin(BASE_URL, "c/")
 TARGET_PA = 443
 SEASON_GAMES = 143
@@ -85,6 +86,61 @@ class FetchedPage:
 
     text: str
     last_modified: datetime | None
+
+
+# 追跡する投手。表記ゆれに備えて姓名の間の空白は無視して突き合わせる。
+TRACKED_PITCHERS = ("奥川 恭伸", "山野 太一")
+
+
+def parse_innings(text: str) -> float:
+    """Parse an innings-pitched cell like "140 2/3" or "137" into a float.
+
+    投球回は 1/3 単位の分数表記で載るため、そのままでは数値にできない。
+    """
+    cleaned = normalize(text)
+    match = re.fullmatch(r"(\d+)(?:([12])/3)?", cleaned)
+    if not match:
+        raise UpdateError(f"could not read innings pitched: {text!r}")
+    whole = int(match.group(1))
+    thirds = int(match.group(2)) if match.group(2) else 0
+    return whole + thirds / 3
+
+
+def format_innings(innings: float) -> str:
+    """Render innings back into the familiar "140 2/3" form."""
+    whole = int(innings)
+    thirds = round((innings - whole) * 3)
+    if thirds == 3:
+        whole, thirds = whole + 1, 0
+    return f"{whole} {thirds}/3" if thirds else str(whole)
+
+
+def parse_pitchers(html: str) -> list[dict]:
+    """Return the tracked Swallows pitchers from the league pitching table."""
+    soup = BeautifulSoup(html, "html.parser")
+    table = find_rank_table(soup, ["選手名", "球団", "防御率", "投球回"])
+    wanted = {normalize(name): name for name in TRACKED_PITCHERS}
+    found: dict[str, dict] = {}
+    for row, _ in rows_as_dicts(table):
+        key = normalize(pick(row, "選手名", "選手"))
+        if key not in wanted or key in found:
+            continue
+        innings = parse_innings(pick(row, "投球回"))
+        found[key] = {
+            "name": pick(row, "選手名", "選手"),
+            "team": pick(row, "球団"),
+            "era": as_float(pick(row, "防御率"), f"{key} ERA"),
+            "wins": as_int(pick(row, "勝利", "勝"), f"{key} wins"),
+            "losses": as_int(pick(row, "敗戦", "敗"), f"{key} losses"),
+            "games": as_int(pick(row, "試合", "試"), f"{key} games"),
+            "strikeouts": as_int(pick(row, "奪三振"), f"{key} strikeouts"),
+            "innings": innings,
+            "innings_text": pick(row, "投球回"),
+        }
+    missing = [name for key, name in wanted.items() if key not in found]
+    if missing:
+        raise UpdateError(f"pitchers were not found: {', '.join(missing)}")
+    return [found[normalize(name)] for name in TRACKED_PITCHERS]
 
 
 def parse_last_modified(raw: str | None) -> datetime | None:
@@ -453,6 +509,7 @@ def build_payload(
     team_games_played: int,
     leader_team_games_played: int | None = None,
     source_last_modified: datetime | None = None,
+    pitchers: list[dict] | None = None,
 ) -> dict:
     remaining = max(TARGET_PA - masuda["pa"], 0)
     remaining_games = max(SEASON_GAMES - team_games_played, 0)
@@ -500,8 +557,23 @@ def build_payload(
             "masuda": MASUDA_URL,
             "leader": LEADER_URL,
             "team_standings": TEAM_STANDINGS_URL,
+            "pitchers": PITCHER_URL,
         },
         "masuda": masuda,
+        # 規定投球回はチーム試合数×1.0。143試合制なので最終143回。
+        "target_innings": SEASON_GAMES,
+        "pitchers": [
+            {
+                **pitcher,
+                "remaining_innings": max(SEASON_GAMES - pitcher["innings"], 0),
+                "remaining_innings_text": format_innings(
+                    max(SEASON_GAMES - pitcher["innings"], 0)
+                ),
+                "progress": min(pitcher["innings"] / SEASON_GAMES * 100, 100),
+                "current_regulation_innings": team_games_played,
+            }
+            for pitcher in (pitchers or [])
+        ],
         # 首位打者の残り試合数は所属球団の順位表の行から取る（増田選手側と同じ出典）
         "leader": {
             **leader,
@@ -608,10 +680,12 @@ def main() -> None:
     try:
         # Only the required data pages are fetched; this script never crawls the site.
         robots = load_robots(session)
-        assert_robots_allowed(robots, [MASUDA_URL, LEADER_URL, TEAM_STANDINGS_URL])
+        assert_robots_allowed(robots, [MASUDA_URL, LEADER_URL, TEAM_STANDINGS_URL, PITCHER_URL])
         masuda, player_url, masuda_modified = fetch_masuda_stats(session)
         assert_robots_allowed(robots, [player_url.replace(".html", "S.html")])
         leader, leader_modified = fetch_leader_stats(session)
+        pitcher_page = fetch(session, PITCHER_URL)
+        pitchers = parse_pitchers(pitcher_page.text)
         standings, standings_modified = fetch_standings(session)
         if "ヤクルト" not in standings:
             raise UpdateError("Yakult was not found in the Central League standings")
@@ -625,14 +699,15 @@ def main() -> None:
         games, games_modified = fetch_recent_stats(session, player_url)
         # 取得元は全ページを深夜バッチで一括生成するため、最も新しい Last-Modified を代表値にする
         modified_times = [
-            t for t in (masuda_modified, leader_modified, standings_modified, games_modified)
+            t for t in (masuda_modified, leader_modified, standings_modified,
+                        games_modified, pitcher_page.last_modified)
             if t is not None
         ]
         source_last_modified = max(modified_times) if modified_times else None
         validate(masuda, leader, games, team_games_played)
         payload = build_payload(
             masuda, leader, games, team_games_played,
-            leader_team_games_played, source_last_modified,
+            leader_team_games_played, source_last_modified, pitchers,
         )
         if payload["source"]["stale"]:
             # 取得は成功しているので更新自体は止めない。気づけるように警告だけ残す。
