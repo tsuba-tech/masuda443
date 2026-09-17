@@ -1,7 +1,7 @@
 {
-  "updated": "2026-09-17T12:44:55+09:00",
+  "updated": "2026-09-17T13:42:26+09:00",
   "source_status": "ok",
-  "last_successful_fetch": "2026-09-17T12:44:55+09:00",
+  "last_successful_fetch": "2026-09-17T13:42:26+09:00",
   "target_pa": 443,
   "team": {
     "name": "東京ヤクルトスワローズ",
@@ -18,7 +18,8 @@
     "masuda": "https://baseballdata.jp/cdrm.html",
     "leader": "https://baseballdata.jp/ctop.html",
     "team_standings": "https://baseballdata.jp/c/",
-    "pitchers": "https://baseballdata.jp/cptop.html"
+    "pitchers": "https://baseballdata.jp/cptop.html",
+    "steals": "https://baseballdata.jp/cst.html"
   },
   "masuda": {
     "name": "増田 珠",
@@ -41,6 +42,27 @@
     "ops": 0.737
   },
   "target_innings": 143,
+  "steals": {
+    "leader": {
+      "name": "浦田 俊輔",
+      "team": "巨人",
+      "steals": 36,
+      "attempts": 41,
+      "success_rate": "87.80%",
+      "games": 118
+    },
+    "chaser": {
+      "name": "岩田 幸宏",
+      "team": "ヤクルト",
+      "steals": 35,
+      "attempts": 39,
+      "success_rate": "89.74%",
+      "games": 115
+    },
+    "gap": 1,
+    "to_lead": 2,
+    "is_leading": false
+  },
   "pitchers": [
     {
       "name": "奥川 恭伸",

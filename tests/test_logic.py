@@ -3,7 +3,7 @@ import unittest
 from update import (
     GameLine, aggregate_games, build_payload, canonical_team, hitting_streak,
     format_innings, parse_innings, parse_last_modified, parse_pitchers,
-    parse_standings_games, parse_team_games,
+    parse_standings_games, parse_steals, parse_team_games,
     regulation_pa_for_games, status_for,
 )
 from datetime import datetime, timedelta, timezone
@@ -167,6 +167,43 @@ class LogicTests(unittest.TestCase):
         entry = payload["pitchers"][0]
         self.assertAlmostEqual(entry["remaining_innings"], 6.0)
         self.assertEqual(entry["remaining_innings_text"], "6")
+
+    def test_parse_steals_reads_the_leader_and_the_chaser(self):
+        html = """
+        <table><thead><tr><th>#</th><th>選手</th><th>球団</th><th>盗塁</th>
+        <th>試合</th><th>盗塁企図</th><th>盗塁成功率</th></tr></thead>
+        <tbody>
+        <tr><td>1</td><td>浦田 俊輔</td><td>巨人</td><td>36</td><td>118</td><td>41</td><td>87.80%</td></tr>
+        <tr><td>2</td><td>岩田 幸宏</td><td>ヤクルト</td><td>35</td><td>115</td><td>39</td><td>89.74%</td></tr>
+        </tbody></table>
+        """
+        steals = parse_steals(html)
+        self.assertEqual(steals["leader"]["name"], "浦田 俊輔")
+        self.assertEqual(steals["chaser"]["steals"], 35)
+        self.assertEqual(steals["chaser"]["success_rate"], "89.74%")
+
+    def test_steal_gap_separates_tying_from_taking_the_lead(self):
+        steals = {
+            "leader": {"name": "浦田 俊輔", "team": "巨人", "steals": 36,
+                       "attempts": 41, "success_rate": "87.80%", "games": 118},
+            "chaser": {"name": "岩田 幸宏", "team": "ヤクルト", "steals": 35,
+                       "attempts": 39, "success_rate": "89.74%", "games": 115},
+        }
+        payload = build_payload(sample_player(392), LEADER, GAMES, 129, 131, None, None, steals)
+        self.assertEqual(payload["steals"]["gap"], 1)
+        self.assertEqual(payload["steals"]["to_lead"], 2)
+        self.assertFalse(payload["steals"]["is_leading"])
+
+    def test_chaser_on_top_is_marked_as_leading(self):
+        steals = {
+            "leader": {"name": "岩田 幸宏", "team": "ヤクルト", "steals": 37,
+                       "attempts": 41, "success_rate": "90.24%", "games": 116},
+            "chaser": {"name": "岩田 幸宏", "team": "ヤクルト", "steals": 37,
+                       "attempts": 41, "success_rate": "90.24%", "games": 116},
+        }
+        payload = build_payload(sample_player(392), LEADER, GAMES, 129, 131, None, None, steals)
+        self.assertTrue(payload["steals"]["is_leading"])
+        self.assertEqual(payload["steals"]["gap"], 0)
 
     def test_hitting_streak(self):
         self.assertEqual(hitting_streak(GAMES), 5)

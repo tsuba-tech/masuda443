@@ -37,6 +37,7 @@ BASE_URL = "https://baseballdata.jp/"
 MASUDA_URL = urljoin(BASE_URL, "cdrm.html")
 LEADER_URL = urljoin(BASE_URL, "ctop.html")
 PITCHER_URL = urljoin(BASE_URL, "cptop.html")
+STEAL_URL = urljoin(BASE_URL, "cst.html")
 TEAM_STANDINGS_URL = urljoin(BASE_URL, "c/")
 TARGET_PA = 443
 SEASON_GAMES = 143
@@ -141,6 +142,44 @@ def parse_pitchers(html: str) -> list[dict]:
     if missing:
         raise UpdateError(f"pitchers were not found: {', '.join(missing)}")
     return [found[normalize(name)] for name in TRACKED_PITCHERS]
+
+
+# 盗塁王争いで追いかける選手。1位は毎試合入れ替わりうるので固定しない。
+TRACKED_RUNNER = "岩田 幸宏"
+
+
+def parse_steal_row(row: dict) -> dict:
+    """Read one row of the stolen-base ranking."""
+    return {
+        "name": pick(row, "選手名", "選手"),
+        "team": pick(row, "球団"),
+        "steals": as_int(pick(row, "盗塁"), "steals"),
+        "attempts": as_int(pick(row, "盗塁企図"), "steal attempts"),
+        "success_rate": pick(row, "盗塁成功率"),
+        "games": as_int(pick(row, "試合"), "games"),
+    }
+
+
+def parse_steals(html: str) -> dict:
+    """Return the stolen-base leader and the runner we track, from one table.
+
+    盗塁王は相手のいる争いなので、固定の目標値ではなく 1 位との差で追う。
+    """
+    soup = BeautifulSoup(html, "html.parser")
+    table = find_rank_table(soup, ["選手", "球団", "盗塁"])
+    rows = rows_as_dicts(table)
+    if not rows:
+        raise UpdateError("the stolen-base ranking contained no players")
+    leader = parse_steal_row(rows[0][0])
+    wanted = normalize(TRACKED_RUNNER)
+    chaser = next(
+        (parse_steal_row(row) for row, _ in rows
+         if normalize(pick(row, "選手名", "選手")) == wanted),
+        None,
+    )
+    if chaser is None:
+        raise UpdateError(f"{TRACKED_RUNNER} was not found in the stolen-base ranking")
+    return {"leader": leader, "chaser": chaser}
 
 
 def parse_last_modified(raw: str | None) -> datetime | None:
@@ -510,6 +549,7 @@ def build_payload(
     leader_team_games_played: int | None = None,
     source_last_modified: datetime | None = None,
     pitchers: list[dict] | None = None,
+    steals: dict | None = None,
 ) -> dict:
     remaining = max(TARGET_PA - masuda["pa"], 0)
     remaining_games = max(SEASON_GAMES - team_games_played, 0)
@@ -558,10 +598,21 @@ def build_payload(
             "leader": LEADER_URL,
             "team_standings": TEAM_STANDINGS_URL,
             "pitchers": PITCHER_URL,
+            "steals": STEAL_URL,
         },
         "masuda": masuda,
         # 規定投球回はチーム試合数×1.0。143試合制なので最終143回。
         "target_innings": SEASON_GAMES,
+        "steals": (
+            {
+                **steals,
+                # 並ぶのに必要な数と、単独で上回るのに必要な数を分けて出す
+                "gap": steals["leader"]["steals"] - steals["chaser"]["steals"],
+                "to_lead": max(steals["leader"]["steals"] - steals["chaser"]["steals"] + 1, 0),
+                "is_leading": steals["chaser"]["steals"] >= steals["leader"]["steals"],
+            }
+            if steals else None
+        ),
         "pitchers": [
             {
                 **pitcher,
@@ -680,12 +731,14 @@ def main() -> None:
     try:
         # Only the required data pages are fetched; this script never crawls the site.
         robots = load_robots(session)
-        assert_robots_allowed(robots, [MASUDA_URL, LEADER_URL, TEAM_STANDINGS_URL, PITCHER_URL])
+        assert_robots_allowed(robots, [MASUDA_URL, LEADER_URL, TEAM_STANDINGS_URL, PITCHER_URL, STEAL_URL])
         masuda, player_url, masuda_modified = fetch_masuda_stats(session)
         assert_robots_allowed(robots, [player_url.replace(".html", "S.html")])
         leader, leader_modified = fetch_leader_stats(session)
         pitcher_page = fetch(session, PITCHER_URL)
         pitchers = parse_pitchers(pitcher_page.text)
+        steal_page = fetch(session, STEAL_URL)
+        steals = parse_steals(steal_page.text)
         standings, standings_modified = fetch_standings(session)
         if "ヤクルト" not in standings:
             raise UpdateError("Yakult was not found in the Central League standings")
@@ -700,14 +753,15 @@ def main() -> None:
         # 取得元は全ページを深夜バッチで一括生成するため、最も新しい Last-Modified を代表値にする
         modified_times = [
             t for t in (masuda_modified, leader_modified, standings_modified,
-                        games_modified, pitcher_page.last_modified)
+                        games_modified, pitcher_page.last_modified,
+                        steal_page.last_modified)
             if t is not None
         ]
         source_last_modified = max(modified_times) if modified_times else None
         validate(masuda, leader, games, team_games_played)
         payload = build_payload(
             masuda, leader, games, team_games_played,
-            leader_team_games_played, source_last_modified, pitchers,
+            leader_team_games_played, source_last_modified, pitchers, steals,
         )
         if payload["source"]["stale"]:
             # 取得は成功しているので更新自体は止めない。気づけるように警告だけ残す。

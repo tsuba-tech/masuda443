@@ -4,11 +4,11 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#ffffff">
-  <meta name="description" content="2026年シーズン、奥川恭伸投手・山野太一投手の規定投球回143到達を追う非公式応援ダッシュボード。">
-  <title>OKUGAWA 143 ／ YAMANO 143｜TSUBA TRACKER</title>
+  <meta name="description" content="2026年シーズン、岩田幸宏選手の盗塁王争いを追う非公式応援ダッシュボード。">
+  <title>IWATA 盗塁王｜TSUBA TRACKER</title>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='8' fill='%230017c1'/%3E%3Cpath d='M14 17h36v9H36v21h-8V26H14z' fill='white'/%3E%3C/svg%3E">
   <link rel="stylesheet" href="style.css?v=1.9.0">
-  <script src="pitchers.js?v=1.9.0" defer></script>
+  <script src="steals.js?v=1.9.0" defer></script>
 </head>
 <body class="mode-normal">
   <header class="site-header">
@@ -20,21 +20,21 @@
 
   <nav class="counter-tabs" aria-label="カウンター切替">
     <a href="./">MASUDA <b>443</b></a>
-    <a href="#okugawa" class="is-current" aria-current="page">OKUGAWA <b>143</b></a>
-    <a href="#yamano">YAMANO <b>143</b></a>
-    <a href="steals.html">IWATA <b>盗塁王</b></a>
+    <a href="pitchers.html#okugawa">OKUGAWA <b>143</b></a>
+    <a href="pitchers.html#yamano">YAMANO <b>143</b></a>
+    <a href="steals.html" class="is-current" aria-current="page">IWATA <b>盗塁王</b></a>
   </nav>
 
   <main id="top">
     <div class="section-heading pitchers-heading">
-      <p class="eyebrow">規定投球回への道</p>
-      <h1 id="page-title">規定投球回 143</h1>
-      <p>規定投球回は「チーム試合数×1.0」。2026年は143試合制のため143イニングです。</p>
+      <p class="eyebrow">盗塁王争い</p>
+      <h1 id="page-title">IWATA 盗塁王</h1>
+      <p>盗塁王は決まった目標数ではなく、1位との差で決まります。相手が決めればゴールも動きます。</p>
     </div>
-    <p id="pitchers-basis" class="data-basis"></p>
+    <p id="steals-basis" class="data-basis"></p>
 
-    <div id="pitchers" class="pitcher-list" aria-live="polite">
-      <p class="pitcher-loading">投手成績を読み込んでいます。</p>
+    <div id="steals" class="steal-wrap" aria-live="polite">
+      <p class="pitcher-loading">盗塁成績を読み込んでいます。</p>
     </div>
   </main>
 

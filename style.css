@@ -95,6 +95,28 @@ main { width: min(100% - 2rem, var(--max-width)); margin: 1rem auto 0; }
 .counter-tabs a.is-current { border-color: var(--blue-1000); background: var(--blue-1000); color: #fff; }
 .counter-tabs a.is-current b { color: #fff; }
 
+/* 盗塁王争い。固定目標がないので「差」を主役に出す */
+.steal-wrap { margin-top: 1.25rem; }
+.steal-headline { display: flex; align-items: baseline; gap: .55rem; padding: 1rem 1.15rem; border-left: .5rem solid var(--blue-1000); background: var(--surface-subtle); }
+.steal-headline span { color: var(--ink); font-size: .95rem; font-weight: 700; }
+.steal-headline strong { color: var(--blue-1000); font-size: clamp(3rem, 16vw, 4.75rem); font-weight: 700; line-height: .95; letter-spacing: -.05em; }
+.steal-lead { font-size: clamp(1.5rem, 7vw, 2.25rem) !important; color: var(--success) !important; letter-spacing: -.02em; }
+.steal-note-lead { margin: .7rem 0 0; color: var(--ink); font-size: .9rem; font-weight: 700; line-height: 1.6; }
+.steal-pair { display: grid; gap: .75rem; margin-top: 1.25rem; }
+.steal-card { padding: 1.1rem; border: 1px solid var(--border); background: #fff; }
+.steal-card-chaser { border-left: .35rem solid var(--blue-1000); background: var(--blue-50); }
+.steal-name { margin: .15rem 0 0; color: var(--ink); font-size: 1.05rem; font-weight: 700; }
+.steal-team { margin: .1rem 0 0; color: var(--ink-subtle); font-size: .75rem; }
+.steal-count { display: flex; align-items: baseline; gap: .4rem; margin: .5rem 0 0; }
+.steal-count strong { color: var(--ink); font-size: clamp(2.6rem, 13vw, 3.6rem); font-weight: 700; line-height: 1; letter-spacing: -.04em; }
+.steal-card-chaser .steal-count strong { color: var(--blue-1000); }
+.steal-count span { color: var(--ink-subtle); font-size: .85rem; font-weight: 700; }
+.steal-card .steal-stats { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.steal-card .steal-stats dd { font-size: 1.05rem; }
+@media (min-width: 48rem) {
+  .steal-pair { grid-template-columns: 1fr 1fr; }
+}
+
 .pitchers-heading { width: min(100%, var(--max-width)); margin-top: 1.5rem; }
 .pitchers-heading h1 { font-size: clamp(1.5rem, 6vw, 2rem); line-height: 1.4; white-space: normal; letter-spacing: normal; }
 .pitcher-list { display: grid; gap: 1.25rem; margin-top: 1.25rem; }
