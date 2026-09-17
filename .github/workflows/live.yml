@@ -7,17 +7,8 @@ name: Live plate appearance
 on:
   workflow_dispatch:
     inputs:
-      action:
-        description: "操作"
-        type: choice
-        required: true
-        default: "打席を追加"
-        options:
-          - "打席を追加"
-          - "直前を取り消す"
-          - "本日分をクリア"
-      result:
-        description: "打席結果（追加のときだけ使用）"
+      command:
+        description: "打席結果／操作"
         type: choice
         required: true
         default: "安打"
@@ -33,6 +24,8 @@ on:
           - "凡退"
           - "三振"
           - "失策出塁"
+          - "直前を取り消す"
+          - "本日分をクリア"
       note:
         description: "試合名など（任意・例: 神宮 DeNA戦）"
         type: string
@@ -60,17 +53,9 @@ jobs:
 
       - name: Record the plate appearance
         env:
-          INPUT_ACTION: ${{ inputs.action }}
-          INPUT_RESULT: ${{ inputs.result }}
+          INPUT_COMMAND: ${{ inputs.command }}
           INPUT_NOTE: ${{ inputs.note }}
-        run: |
-          case "$INPUT_ACTION" in
-            "打席を追加")    ACTION=add ;;
-            "直前を取り消す") ACTION=undo ;;
-            "本日分をクリア") ACTION=clear ;;
-            *) echo "unknown action: $INPUT_ACTION"; exit 1 ;;
-          esac
-          python live.py --action "$ACTION" --result "$INPUT_RESULT" --note "$INPUT_NOTE"
+        run: python live.py --command "$INPUT_COMMAND" --note "$INPUT_NOTE"
 
       - name: Commit
         run: |

@@ -55,8 +55,16 @@ def totals(entries: list[dict]) -> dict[str, int]:
     return summary
 
 
-def apply(state: dict, action: str, result: str, note: str, now: datetime) -> dict:
-    """Return the next state for one button press from the workflow form."""
+UNDO = "直前を取り消す"
+CLEAR = "本日分をクリア"
+
+
+def apply(state: dict, command: str, note: str, now: datetime) -> dict:
+    """Return the next state for one menu選択 from the shortcut.
+
+    打席結果と取り消し操作を同じ 1 つの入力にまとめてある。こうしないと
+    iPhone のショートカット側でメニュー項目ごとに分岐を作る羽目になる。
+    """
     game_date = now.strftime("%Y-%m-%d")
     # 日付が変わっていれば前日分は引き継がない
     if state.get("date") != game_date:
@@ -64,29 +72,26 @@ def apply(state: dict, action: str, result: str, note: str, now: datetime) -> di
     if note:
         state["note"] = note
 
-    if action == "clear":
+    if command == CLEAR:
         return empty_state(game_date, note)
-    if action == "undo":
+    if command == UNDO:
         if state["entries"]:
             state["entries"].pop()
         return state
-    if action == "add":
-        if result not in RESULTS:
-            raise SystemExit(f"unknown result: {result}")
-        state["entries"].append({"result": result, "at": now.isoformat(timespec="seconds")})
+    if command in RESULTS:
+        state["entries"].append({"result": command, "at": now.isoformat(timespec="seconds")})
         return state
-    raise SystemExit(f"unknown action: {action}")
+    raise SystemExit(f"unknown command: {command}")
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--action", required=True, choices=["add", "undo", "clear"])
-    parser.add_argument("--result", default="")
+    parser.add_argument("--command", required=True)
     parser.add_argument("--note", default="")
     args = parser.parse_args()
 
     now = datetime.now(JST)
-    state = apply(load_state(), args.action, args.result, args.note, now)
+    state = apply(load_state(), args.command, args.note, now)
     state["updated"] = now.isoformat(timespec="seconds")
     state["totals"] = totals(state["entries"])
     LIVE_PATH.write_text(

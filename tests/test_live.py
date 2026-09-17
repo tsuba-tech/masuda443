@@ -20,7 +20,7 @@ class LiveEntryTests(unittest.TestCase):
 
     def add(self, *results):
         for result in results:
-            self.state = live.apply(self.state, "add", result, "", self.now)
+            self.state = live.apply(self.state, result, "", self.now)
         return live.totals(self.state["entries"])
 
     def test_hits_count_as_at_bats(self):
@@ -40,18 +40,18 @@ class LiveEntryTests(unittest.TestCase):
 
     def test_undo_removes_only_the_last_entry(self):
         self.add("安打", "三振")
-        self.state = live.apply(self.state, "undo", "", "", self.now)
+        self.state = live.apply(self.state, "直前を取り消す", "", self.now)
         self.assertEqual(live.totals(self.state["entries"]), {"pa": 1, "ab": 1, "hits": 1, "hr": 0})
 
     def test_clear_empties_the_day(self):
         self.add("安打", "安打")
-        self.state = live.apply(self.state, "clear", "", "", self.now)
+        self.state = live.apply(self.state, "本日分をクリア", "", self.now)
         self.assertEqual(self.state["entries"], [])
 
     def test_a_new_day_does_not_inherit_yesterday(self):
         self.add("安打", "安打")
         tomorrow = self.now + timedelta(days=1)
-        self.state = live.apply(self.state, "add", "三振", "", tomorrow)
+        self.state = live.apply(self.state, "三振", "", tomorrow)
         self.assertEqual(self.state["date"], "2026-09-18")
         self.assertEqual(live.totals(self.state["entries"]), {"pa": 1, "ab": 1, "hits": 0, "hr": 0})
 
