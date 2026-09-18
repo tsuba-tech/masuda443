@@ -1,19 +1,19 @@
 {
-  "updated": "2026-09-17T15:09:57+09:00",
+  "updated": "2026-09-18T09:28:26+09:00",
   "source_status": "ok",
-  "last_successful_fetch": "2026-09-17T15:09:57+09:00",
+  "last_successful_fetch": "2026-09-18T09:28:26+09:00",
   "target_pa": 443,
   "team": {
     "name": "東京ヤクルトスワローズ",
     "season_games": 143,
-    "games_played": 129,
-    "remaining_games": 14,
-    "current_regulation_pa": 400
+    "games_played": 130,
+    "remaining_games": 13,
+    "current_regulation_pa": 403
   },
   "source": {
     "site": "baseballdata.jp",
     "site_name": "データで楽しむプロ野球",
-    "last_modified": "2026-09-17T06:16:29+09:00",
+    "last_modified": "2026-09-18T02:17:05+09:00",
     "stale": false,
     "masuda": "https://baseballdata.jp/cdrm.html",
     "leader": "https://baseballdata.jp/ctop.html",
@@ -24,9 +24,9 @@
   "masuda": {
     "name": "増田 珠",
     "team": "S",
-    "games": 110,
-    "pa": 392,
-    "ab": 356,
+    "games": 111,
+    "pa": 396,
+    "ab": 360,
     "hits": 104,
     "doubles": 11,
     "triples": 0,
@@ -34,12 +34,12 @@
     "rbi": 35,
     "walks": 29,
     "hbp": 3,
-    "strikeouts": 64,
+    "strikeouts": 65,
     "stolen_bases": 4,
-    "avg": 0.29213483146067415,
-    "obp": 0.347,
-    "slg": 0.39,
-    "ops": 0.737
+    "avg": 0.28888888888888886,
+    "obp": 0.343,
+    "slg": 0.386,
+    "ops": 0.73
   },
   "target_innings": 143,
   "steals": {
@@ -57,7 +57,7 @@
       "steals": 35,
       "attempts": 39,
       "success_rate": "89.74%",
-      "games": 115
+      "games": 116
     },
     "gap": 1,
     "to_lead": 2,
@@ -67,17 +67,17 @@
     {
       "name": "奥川 恭伸",
       "team": "ヤクルト",
-      "era": 2.76,
+      "era": 2.75,
       "wins": 7,
-      "losses": 8,
-      "games": 20,
-      "strikeouts": 107,
-      "innings": 137.0,
-      "innings_text": "137",
-      "remaining_innings": 6.0,
-      "remaining_innings_text": "6",
-      "progress": 95.8041958041958,
-      "current_regulation_innings": 129
+      "losses": 9,
+      "games": 21,
+      "strikeouts": 112,
+      "innings": 144.0,
+      "innings_text": "144",
+      "remaining_innings": 0,
+      "remaining_innings_text": "0",
+      "progress": 100,
+      "current_regulation_innings": 130
     },
     {
       "name": "山野 太一",
@@ -92,63 +92,63 @@
       "remaining_innings": 2.333333333333343,
       "remaining_innings_text": "2 1/3",
       "progress": 98.36829836829835,
-      "current_regulation_innings": 129
+      "current_regulation_innings": 130
     }
   ],
   "leader": {
     "name": "佐藤 輝明",
     "team": "阪神",
-    "games": 127,
-    "pa": 542,
-    "ab": 476,
-    "hits": 150,
-    "avg": 0.31512605042016806,
+    "games": 128,
+    "pa": 546,
+    "ab": 480,
+    "hits": 151,
+    "avg": 0.3145833333333333,
     "recent5_avg": 0.211,
-    "obp": 0.393,
-    "slg": 0.618,
-    "ops": 1.011,
-    "team_games_played": 127,
-    "team_remaining_games": 16
+    "obp": 0.392,
+    "slg": 0.617,
+    "ops": 1.009,
+    "team_games_played": 128,
+    "team_remaining_games": 15
   },
   "recent": {
     "last5": {
       "games": 5,
       "ab": 20,
-      "hits": 7,
+      "hits": 6,
       "doubles": 1,
       "triples": 0,
       "hr": 1,
       "walks_hbp": 0,
-      "strikeouts": 3,
-      "avg": 0.35
+      "strikeouts": 4,
+      "avg": 0.3
     },
     "last10": {
       "games": 10,
       "ab": 37,
-      "hits": 14,
+      "hits": 13,
       "doubles": 1,
       "triples": 0,
       "hr": 1,
       "walks_hbp": 2,
       "strikeouts": 5,
-      "avg": 0.3783783783783784
+      "avg": 0.35135135135135137
     },
-    "hit_streak": 7,
+    "hit_streak": 0,
     "latest_game": {
-      "date": "09/15",
-      "hits": 1,
+      "date": "09/17",
+      "hits": 0,
       "hr": 0,
       "multi_hit_3": false
     }
   },
   "derived": {
-    "remaining_pa": 51,
-    "current_regulation_remaining_pa": 8,
-    "required_pa_per_game": 3.642857142857143,
-    "progress": 88.48758465011286,
-    "avg_gap": 0.02299121895949391,
+    "remaining_pa": 47,
+    "current_regulation_remaining_pa": 7,
+    "required_pa_per_game": 3.6153846153846154,
+    "progress": 89.39051918735892,
+    "avg_gap": 0.025694444444444464,
     "adjusted_avg": 0.25552825552825553,
-    "adjusted_gap": 0.059597794891912526,
+    "adjusted_gap": 0.059055077805077794,
     "status": "hot"
   }
 }
