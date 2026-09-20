@@ -1,19 +1,19 @@
 {
-  "updated": "2026-09-19T14:55:38+09:00",
+  "updated": "2026-09-20T09:10:41+09:00",
   "source_status": "ok",
-  "last_successful_fetch": "2026-09-19T14:55:38+09:00",
+  "last_successful_fetch": "2026-09-20T09:10:41+09:00",
   "target_pa": 443,
   "team": {
     "name": "東京ヤクルトスワローズ",
     "season_games": 143,
-    "games_played": 131,
-    "remaining_games": 12,
-    "current_regulation_pa": 406
+    "games_played": 132,
+    "remaining_games": 11,
+    "current_regulation_pa": 409
   },
   "source": {
     "site": "baseballdata.jp",
     "site_name": "データで楽しむプロ野球",
-    "last_modified": "2026-09-19T05:57:46+09:00",
+    "last_modified": "2026-09-20T08:51:37+09:00",
     "stale": false,
     "masuda": "https://baseballdata.jp/cdrm.html",
     "leader": "https://baseballdata.jp/ctop.html",
@@ -24,22 +24,22 @@
   "masuda": {
     "name": "増田 珠",
     "team": "S",
-    "games": 112,
-    "pa": 401,
-    "ab": 365,
+    "games": 113,
+    "pa": 405,
+    "ab": 368,
     "hits": 104,
     "doubles": 11,
     "triples": 0,
     "hr": 8,
     "rbi": 35,
-    "walks": 29,
+    "walks": 30,
     "hbp": 3,
     "strikeouts": 65,
     "stolen_bases": 4,
-    "avg": 0.28493150684931506,
-    "obp": 0.339,
-    "slg": 0.381,
-    "ops": 0.72
+    "avg": 0.2826086956521739,
+    "obp": 0.338,
+    "slg": 0.378,
+    "ops": 0.716
   },
   "target_innings": 143,
   "steals": {
@@ -49,7 +49,7 @@
       "steals": 37,
       "attempts": 41,
       "success_rate": "90.24%",
-      "games": 117
+      "games": 118
     },
     "chaser": {
       "name": "岩田 幸宏",
@@ -57,7 +57,7 @@
       "steals": 37,
       "attempts": 41,
       "success_rate": "90.24%",
-      "games": 117
+      "games": 118
     },
     "gap": 0,
     "to_lead": 1,
@@ -77,7 +77,7 @@
       "remaining_innings": 0,
       "remaining_innings_text": "0",
       "progress": 100,
-      "current_regulation_innings": 131
+      "current_regulation_innings": 132
     },
     {
       "name": "山野 太一",
@@ -92,35 +92,35 @@
       "remaining_innings": 0,
       "remaining_innings_text": "0",
       "progress": 100,
-      "current_regulation_innings": 131
+      "current_regulation_innings": 132
     }
   ],
   "leader": {
     "name": "佐藤 輝明",
     "team": "阪神",
-    "games": 129,
-    "pa": 550,
-    "ab": 484,
+    "games": 130,
+    "pa": 554,
+    "ab": 487,
     "hits": 152,
-    "avg": 0.3140495867768595,
+    "avg": 0.31211498973305957,
     "recent5_avg": 0.211,
-    "obp": 0.391,
-    "slg": 0.614,
-    "ops": 1.005,
-    "team_games_played": 129,
-    "team_remaining_games": 14
+    "obp": 0.388,
+    "slg": 0.61,
+    "ops": 0.998,
+    "team_games_played": 130,
+    "team_remaining_games": 13
   },
   "recent": {
     "last5": {
       "games": 5,
       "ab": 20,
-      "hits": 4,
+      "hits": 3,
       "doubles": 0,
       "triples": 0,
       "hr": 0,
-      "walks_hbp": 0,
-      "strikeouts": 3,
-      "avg": 0.2
+      "walks_hbp": 1,
+      "strikeouts": 2,
+      "avg": 0.15
     },
     "last10": {
       "games": 10,
@@ -135,20 +135,20 @@
     },
     "hit_streak": 0,
     "latest_game": {
-      "date": "09/18",
+      "date": "09/19",
       "hits": 0,
       "hr": 0,
       "multi_hit_3": false
     }
   },
   "derived": {
-    "remaining_pa": 42,
-    "current_regulation_remaining_pa": 5,
-    "required_pa_per_game": 3.5,
-    "progress": 90.51918735891647,
-    "avg_gap": 0.02911807992754445,
-    "adjusted_avg": 0.25552825552825553,
-    "adjusted_gap": 0.05852133124860398,
+    "remaining_pa": 38,
+    "current_regulation_remaining_pa": 4,
+    "required_pa_per_game": 3.4545454545454546,
+    "progress": 91.42212189616254,
+    "avg_gap": 0.029506294080885676,
+    "adjusted_avg": 0.2561576354679803,
+    "adjusted_gap": 0.05595735426507925,
     "status": "cold"
   }
 }
