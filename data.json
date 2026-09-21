@@ -1,19 +1,19 @@
 {
-  "updated": "2026-09-20T15:19:41+09:00",
+  "updated": "2026-09-21T09:19:11+09:00",
   "source_status": "ok",
-  "last_successful_fetch": "2026-09-20T15:19:41+09:00",
+  "last_successful_fetch": "2026-09-21T09:19:11+09:00",
   "target_pa": 443,
   "team": {
     "name": "東京ヤクルトスワローズ",
     "season_games": 143,
-    "games_played": 132,
-    "remaining_games": 11,
-    "current_regulation_pa": 409
+    "games_played": 133,
+    "remaining_games": 10,
+    "current_regulation_pa": 412
   },
   "source": {
     "site": "baseballdata.jp",
     "site_name": "データで楽しむプロ野球",
-    "last_modified": "2026-09-20T11:48:50+09:00",
+    "last_modified": "2026-09-21T09:17:10+09:00",
     "stale": false,
     "masuda": "https://baseballdata.jp/cdrm.html",
     "leader": "https://baseballdata.jp/ctop.html",
@@ -24,40 +24,40 @@
   "masuda": {
     "name": "増田 珠",
     "team": "S",
-    "games": 113,
-    "pa": 405,
-    "ab": 368,
-    "hits": 104,
+    "games": 114,
+    "pa": 409,
+    "ab": 372,
+    "hits": 106,
     "doubles": 11,
     "triples": 0,
     "hr": 8,
     "rbi": 35,
     "walks": 30,
     "hbp": 3,
-    "strikeouts": 65,
+    "strikeouts": 66,
     "stolen_bases": 4,
-    "avg": 0.2826086956521739,
-    "obp": 0.338,
-    "slg": 0.378,
-    "ops": 0.716
+    "avg": 0.2849462365591398,
+    "obp": 0.34,
+    "slg": 0.379,
+    "ops": 0.719
   },
   "target_innings": 143,
   "steals": {
     "leader": {
       "name": "岩田 幸宏",
       "team": "ヤクルト",
-      "steals": 37,
-      "attempts": 41,
-      "success_rate": "90.24%",
-      "games": 118
+      "steals": 38,
+      "attempts": 42,
+      "success_rate": "90.48%",
+      "games": 119
     },
     "chaser": {
       "name": "岩田 幸宏",
       "team": "ヤクルト",
-      "steals": 37,
-      "attempts": 41,
-      "success_rate": "90.24%",
-      "games": 118
+      "steals": 38,
+      "attempts": 42,
+      "success_rate": "90.48%",
+      "games": 119
     },
     "gap": 0,
     "to_lead": 1,
@@ -77,7 +77,7 @@
       "remaining_innings": 0,
       "remaining_innings_text": "0",
       "progress": 100,
-      "current_regulation_innings": 132
+      "current_regulation_innings": 133
     },
     {
       "name": "山野 太一",
@@ -92,23 +92,23 @@
       "remaining_innings": 0,
       "remaining_innings_text": "0",
       "progress": 100,
-      "current_regulation_innings": 132
+      "current_regulation_innings": 133
     }
   ],
   "leader": {
     "name": "佐藤 輝明",
     "team": "阪神",
-    "games": 130,
-    "pa": 554,
-    "ab": 487,
-    "hits": 152,
-    "avg": 0.31211498973305957,
+    "games": 131,
+    "pa": 559,
+    "ab": 491,
+    "hits": 154,
+    "avg": 0.3136456211812627,
     "recent5_avg": 0.211,
-    "obp": 0.388,
-    "slg": 0.61,
-    "ops": 0.998,
-    "team_games_played": 130,
-    "team_remaining_games": 13
+    "obp": 0.39,
+    "slg": 0.613,
+    "ops": 1.003,
+    "team_games_played": 131,
+    "team_remaining_games": 12
   },
   "recent": {
     "last5": {
@@ -119,36 +119,36 @@
       "triples": 0,
       "hr": 0,
       "walks_hbp": 1,
-      "strikeouts": 2,
+      "strikeouts": 3,
       "avg": 0.15
     },
     "last10": {
       "games": 10,
-      "ab": 38,
-      "hits": 9,
+      "ab": 39,
+      "hits": 10,
       "doubles": 1,
       "triples": 0,
       "hr": 1,
-      "walks_hbp": 2,
+      "walks_hbp": 1,
       "strikeouts": 5,
-      "avg": 0.23684210526315788
+      "avg": 0.2564102564102564
     },
-    "hit_streak": 0,
+    "hit_streak": 1,
     "latest_game": {
-      "date": "09/19",
-      "hits": 0,
+      "date": "09/20",
+      "hits": 2,
       "hr": 0,
       "multi_hit_3": false
     }
   },
   "derived": {
-    "remaining_pa": 38,
-    "current_regulation_remaining_pa": 4,
-    "required_pa_per_game": 3.4545454545454546,
-    "progress": 91.42212189616254,
-    "avg_gap": 0.029506294080885676,
-    "adjusted_avg": 0.2561576354679803,
-    "adjusted_gap": 0.05595735426507925,
+    "remaining_pa": 34,
+    "current_regulation_remaining_pa": 3,
+    "required_pa_per_game": 3.4,
+    "progress": 92.32505643340858,
+    "avg_gap": 0.028699384622122903,
+    "adjusted_avg": 0.26108374384236455,
+    "adjusted_gap": 0.052561877338898166,
     "status": "cold"
   }
 }
