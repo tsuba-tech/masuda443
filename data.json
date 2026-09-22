@@ -1,7 +1,7 @@
 {
-  "updated": "2026-09-21T15:23:13+09:00",
+  "updated": "2026-09-22T09:54:47+09:00",
   "source_status": "ok",
-  "last_successful_fetch": "2026-09-21T15:23:13+09:00",
+  "last_successful_fetch": "2026-09-22T09:54:47+09:00",
   "target_pa": 443,
   "team": {
     "name": "東京ヤクルトスワローズ",
@@ -13,7 +13,7 @@
   "source": {
     "site": "baseballdata.jp",
     "site_name": "データで楽しむプロ野球",
-    "last_modified": "2026-09-21T12:19:32+09:00",
+    "last_modified": "2026-09-22T09:03:46+09:00",
     "stale": false,
     "masuda": "https://baseballdata.jp/cdrm.html",
     "leader": "https://baseballdata.jp/ctop.html",
@@ -98,17 +98,17 @@
   "leader": {
     "name": "佐藤 輝明",
     "team": "阪神",
-    "games": 131,
-    "pa": 559,
-    "ab": 491,
-    "hits": 154,
-    "avg": 0.3136456211812627,
+    "games": 132,
+    "pa": 564,
+    "ab": 496,
+    "hits": 155,
+    "avg": 0.3125,
     "recent5_avg": 0.211,
-    "obp": 0.39,
-    "slg": 0.613,
-    "ops": 1.003,
-    "team_games_played": 131,
-    "team_remaining_games": 12
+    "obp": 0.388,
+    "slg": 0.609,
+    "ops": 0.997,
+    "team_games_played": 132,
+    "team_remaining_games": 11
   },
   "recent": {
     "last5": {
@@ -146,9 +146,9 @@
     "current_regulation_remaining_pa": 3,
     "required_pa_per_game": 3.4,
     "progress": 92.32505643340858,
-    "avg_gap": 0.028699384622122903,
+    "avg_gap": 0.02755376344086019,
     "adjusted_avg": 0.26108374384236455,
-    "adjusted_gap": 0.052561877338898166,
+    "adjusted_gap": 0.051416256157635454,
     "status": "cold"
   }
 }
