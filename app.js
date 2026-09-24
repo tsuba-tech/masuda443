@@ -300,6 +300,82 @@ function renderLivePanel(live) {
   });
 }
 
+/**
+ * 打率ランキングの盤面と、すぐ上の選手を抜くのに必要な安打数を出す。
+ *
+ * 必要安打数は「これから連続で安打を重ねた場合」の最小本数。打つたびに
+ * 打数も1増えるため、単純な引き算では出せない。表示は小数3桁なので、
+ * 丸めた結果まで上回るところまで積む。
+ *
+ * @param {object} data 速報を合成したあとの data
+ */
+function renderAverageBoard(data) {
+  const race = data.average_race;
+  const list = $("#race-board");
+  if (!list) return;
+  list.replaceChildren();
+  const board = race?.board || [];
+  if (!board.length) {
+    setText("#race-board-lead", "規定到達者のランキングを取得できていません。");
+    setText("#race-board-next", "");
+    return;
+  }
+
+  const { hits, ab, avg } = data.masuda;
+  // 速報を足すと順位が動くので、確定の順位表に自分の現在値を当てて並べ直す
+  const others = board.filter((entry) => normalizeName(entry.name) !== normalizeName(data.masuda.name));
+  const ranked = [...others, { name: data.masuda.name, team: "ヤクルト", hits, ab, avg, self: true }]
+    .sort((a, b) => b.avg - a.avg)
+    .map((entry, index) => ({ ...entry, rank: index + 1 }));
+  const me = ranked.find((entry) => entry.self);
+  const target = me.rank > 1 ? ranked[me.rank - 2] : null;
+
+  setText("#race-board-lead", `規定到達者${ranked.length}人中 ${me.rank}位（${formatAverage(me.avg)}）`);
+
+  const nextNode = $("#race-board-next");
+  if (!target) {
+    nextNode.textContent = "セ・リーグ打率 1位。";
+  } else {
+    const need = hitsToPass(hits, ab, target.avg);
+    nextNode.replaceChildren(
+      document.createTextNode(`${me.rank - 1}位の${withHonorific(target.name)}（${formatAverage(target.avg)}）まで `),
+      el("strong", null, need === null ? "－" : String(need)),
+      document.createTextNode(need === null ? "安打では届きません" : "安打で逆転"),
+    );
+  }
+
+  // 自分の前後が見える範囲だけ出す。全員並べるとスマホで縦に伸びすぎる。
+  const from = Math.max(0, Math.min(me.rank - 3, ranked.length - 5));
+  ranked.slice(from, from + 5).forEach((entry) => {
+    const row = el("li", "board-row");
+    if (entry.self) row.classList.add("board-row-self");
+    else if (target && entry.rank === target.rank) row.classList.add("board-row-target");
+    row.append(el("span", "board-rank", String(entry.rank)));
+    const name = el("span", "board-name", entry.name);
+    name.append(el("span", "board-team", entry.team));
+    row.append(name, el("span", "board-avg", formatAverage(entry.avg)));
+    list.append(row);
+  });
+}
+
+/** 姓名の空白ゆれを無視して比べる。 */
+function normalizeName(name) {
+  return (name || "").replace(/[\s　]/g, "");
+}
+
+/**
+ * 連続で安打を重ねて targetAvg を上回るのに要する最小本数。
+ * 表示は小数3桁なので、丸めた値まで上回るところまで数える。
+ * @returns {?number} 現実的な範囲で届かなければ null
+ */
+function hitsToPass(hits, ab, targetAvg) {
+  for (let n = 1; n <= 60; n += 1) {
+    const avg = (hits + n) / (ab + n);
+    if (avg > targetAvg && formatAverage(avg) !== formatAverage(targetAvg)) return n;
+  }
+  return null;
+}
+
 function renderRace(data) {
   const { leader } = data;
   const projection = raceProjection(data);
@@ -479,6 +555,7 @@ function render(data, live = null) {
   renderQuickSim(masuda);
   renderQualificationOutlook(data);
   renderRace(data);
+  renderAverageBoard(data);
 }
 
 function initCheer() {

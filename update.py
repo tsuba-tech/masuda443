@@ -340,6 +340,31 @@ def parse_masuda(html: str) -> tuple[dict, str] | None:
     return None
 
 
+def parse_average_board(html: str) -> list[dict]:
+    """Return the whole qualified batting-average ranking, in order.
+
+    規定到達者だけが載る表なので、増田選手がここに現れた時点で
+    順位争いが始まる。順位は表の並び順から採る。
+    """
+    soup = BeautifulSoup(html, "html.parser")
+    table = find_rank_table(soup, ["選手名", "球団", "打率", "打数", "安打"])
+    board: list[dict] = []
+    for index, (row, _) in enumerate(rows_as_dicts(table), start=1):
+        hits = as_int(pick(row, "安打"), "board hits")
+        ab = as_int(pick(row, "打数"), "board AB")
+        board.append({
+            "rank": index,
+            "name": pick(row, "選手名", "選手"),
+            "team": pick(row, "球団"),
+            "hits": hits,
+            "ab": ab,
+            "avg": hits / ab if ab else 0.0,
+        })
+    if not board:
+        raise UpdateError("the batting-average ranking contained no players")
+    return board
+
+
 def parse_leader(html: str) -> dict:
     soup = BeautifulSoup(html, "html.parser")
     table = find_rank_table(soup, ["選手名", "球団", "打率", "試合", "打席", "打数", "安打"])
@@ -585,6 +610,7 @@ def build_payload(
     source_last_modified: datetime | None = None,
     pitchers: list[dict] | None = None,
     steals: dict | None = None,
+    average_board: list[dict] | None = None,
 ) -> dict:
     remaining = max(TARGET_PA - masuda["pa"], 0)
     remaining_games = max(SEASON_GAMES - team_games_played, 0)
@@ -638,6 +664,18 @@ def build_payload(
         "masuda": masuda,
         # 規定投球回はチーム試合数×1.0。143試合制なので最終143回。
         "target_innings": SEASON_GAMES,
+        # 規定到達者の打率ランキング。増田選手が載っていなければ rank は None。
+        "average_race": (
+            {
+                "rank": next(
+                    (entry["rank"] for entry in average_board
+                     if normalize(entry["name"]) == PLAYER_NAME),
+                    None,
+                ),
+                "board": average_board,
+            }
+            if average_board else None
+        ),
         "steals": (
             {
                 **steals,
@@ -774,6 +812,7 @@ def main() -> None:
         assert_robots_allowed(robots, [MASUDA_URL, LEADER_URL, TEAM_STANDINGS_URL, PITCHER_URL, STEAL_URL])
         leader_page = fetch(session, LEADER_URL)
         leader, leader_modified = parse_leader(leader_page.text), leader_page.last_modified
+        average_board = parse_average_board(leader_page.text)
         masuda, player_url, masuda_modified = fetch_masuda_stats(session, leader_page)
         assert_robots_allowed(robots, [player_url.replace(".html", "S.html")])
         pitcher_page = fetch(session, PITCHER_URL)
@@ -803,6 +842,7 @@ def main() -> None:
         payload = build_payload(
             masuda, leader, games, team_games_played,
             leader_team_games_played, source_last_modified, pitchers, steals,
+            average_board,
         )
         if payload["source"]["stale"]:
             # 取得は成功しているので更新自体は止めない。気づけるように警告だけ残す。

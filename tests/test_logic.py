@@ -3,7 +3,7 @@ import unittest
 from update import (
     GameLine, aggregate_games, build_payload, canonical_team, hitting_streak,
     format_innings, parse_innings, parse_last_modified, parse_pitchers,
-    parse_masuda, parse_standings_games, parse_steals, parse_team_games,
+    parse_average_board, parse_masuda, parse_standings_games, parse_steals, parse_team_games,
     regulation_pa_for_games, status_for,
 )
 from datetime import datetime, timedelta, timezone
@@ -240,6 +240,35 @@ class LogicTests(unittest.TestCase):
         self.assertTrue(steals["is_leading"])
         self.assertTrue(steals["is_shared_lead"])
         self.assertEqual(steals["gap"], 0)
+
+    def test_average_board_keeps_the_ranking_order(self):
+        html = """
+        <table><thead><tr><th>#</th><th>選手名</th><th>球団</th><th>打率</th>
+        <th>試合</th><th>打席</th><th>打数</th><th>安打</th></tr></thead>
+        <tbody>
+        <tr><td>1</td><td>佐藤 輝明</td><td>阪神</td><td>.313</td><td>134</td><td>573</td><td>504</td><td>158</td></tr>
+        <tr><td>3</td><td>中野 拓夢</td><td>阪神</td><td>.288</td><td>134</td><td>548</td><td>479</td><td>138</td></tr>
+        <tr><td>4</td><td>増田 珠</td><td>ヤクルト</td><td>.287</td><td>116</td><td>420</td><td>383</td><td>110</td></tr>
+        </tbody></table>
+        """
+        board = parse_average_board(html)
+        self.assertEqual([e["rank"] for e in board], [1, 2, 3])
+        self.assertEqual(board[2]["name"], "増田 珠")
+        self.assertAlmostEqual(board[1]["avg"], 138 / 479)
+
+    def test_payload_reports_masudas_rank(self):
+        board = [
+            {"rank": 1, "name": "佐藤 輝明", "team": "阪神", "hits": 158, "ab": 504, "avg": 158 / 504},
+            {"rank": 2, "name": "増田 珠", "team": "ヤクルト", "hits": 110, "ab": 383, "avg": 110 / 383},
+        ]
+        payload = build_payload(sample_player(392), LEADER, GAMES, 129, 131, None, None, None, board)
+        self.assertEqual(payload["average_race"]["rank"], 2)
+        self.assertEqual(len(payload["average_race"]["board"]), 2)
+
+    def test_rank_is_none_while_masuda_is_not_qualified(self):
+        board = [{"rank": 1, "name": "佐藤 輝明", "team": "阪神", "hits": 158, "ab": 504, "avg": 158 / 504}]
+        payload = build_payload(sample_player(392), LEADER, GAMES, 129, 131, None, None, None, board)
+        self.assertIsNone(payload["average_race"]["rank"])
 
     def test_hitting_streak(self):
         self.assertEqual(hitting_streak(GAMES), 5)

@@ -7,8 +7,8 @@
   <meta name="description" content="2026年シーズン、増田珠選手の規定打席443到達と首位打者争いを追う非公式応援ダッシュボード。">
   <title>MASUDA 443｜TSUBA TRACKER</title>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='8' fill='%230017c1'/%3E%3Cpath d='M14 17h36v9H36v21h-8V26H14z' fill='white'/%3E%3C/svg%3E">
-  <link rel="stylesheet" href="style.css?v=1.9.1">
-  <script src="app.js?v=1.9.1" defer></script>
+  <link rel="stylesheet" href="style.css?v=2.0.0">
+  <script src="app.js?v=2.0.0" defer></script>
 </head>
 <body class="mode-normal">
   <div class="ambient" aria-hidden="true"></div>
@@ -135,6 +135,17 @@
       <div id="quick-sim" class="quick-sim" aria-live="polite"></div>
     </section>
 
+    <section class="sim-section average-race" aria-labelledby="race-board-title">
+      <div class="section-heading">
+        <p class="eyebrow">セ・リーグ 打率ランキング</p>
+        <h2 id="race-board-title">いま何位か</h2>
+        <p id="race-board-lead">順位を読み込んでいます。</p>
+      </div>
+      <p id="race-board-next" class="board-next"></p>
+      <ol id="race-board" class="board-list" aria-live="polite"></ol>
+      <p class="board-note">※規定打席に到達した選手のみのランキングです。</p>
+    </section>
+
     <section class="sim-section title-race" aria-labelledby="race-title">
       <div class="section-heading">
         <p class="eyebrow">現在の首位打者と比較</p>
@@ -154,7 +165,7 @@
   </main>
 
   <footer>
-    <p class="site-version">TSUBA TRACKER v1.9.1</p>
+    <p class="site-version">TSUBA TRACKER v2.0.0</p>
     <p>データ基準　<time id="source-updated-at-foot">----</time>（データで楽しむプロ野球の更新時点）</p>
     <p>当サイト取得　<time id="updated-at">----</time></p>
     <p>成績データ出典：<a href="https://baseballdata.jp/" target="_blank" rel="noopener noreferrer">baseballdata.jp</a></p>
