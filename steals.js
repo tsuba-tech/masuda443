@@ -61,13 +61,21 @@ function render(data) {
   const container = $("#steals");
   container.replaceChildren();
   const steals = data.steals;
-  if (!steals) {
+  if (!steals || !steals.runner) {
     container.append(el("p", "pitcher-loading", "盗塁データがまだありません。"));
   } else {
-    const { leader, chaser } = steals;
+    const { runner, rival } = steals;
+    const margin = -steals.gap; // 首位側から見た2位との差
+
     const headline = el("div", "steal-headline");
-    if (steals.is_leading) {
-      headline.append(el("strong", "steal-lead", steals.gap === 0 ? "首位に並走" : "盗塁王争い 単独首位"));
+    if (steals.is_shared_lead) {
+      headline.append(el("strong", "steal-lead", "盗塁王争い 首位タイ"));
+    } else if (steals.is_leading) {
+      headline.append(
+        el("span", null, "2位との差"),
+        el("strong", null, String(margin)),
+        el("span", null, "個"),
+      );
     } else {
       headline.append(
         el("span", null, "1位との差"),
@@ -77,25 +85,33 @@ function render(data) {
     }
     container.append(headline);
 
-    if (!steals.is_leading) {
+    if (steals.is_shared_lead) {
+      container.append(el("p", "steal-note-lead",
+        `あと1個で単独首位。${rival.name}選手と並んでいます。`));
+    } else if (steals.is_leading) {
+      container.append(el("p", "steal-note-lead",
+        `単独首位。${rival ? `${rival.name}選手に${margin}個差をつけています。` : ""}`));
+    } else {
       container.append(el("p", "steal-note-lead",
         `並ぶまであと${steals.gap}個、単独で上回るにはあと${steals.to_lead}個。`));
     }
 
     const pair = el("div", "steal-pair");
-    pair.append(
-      runnerCard(chaser, "追う", true),
-      runnerCard(leader, "現在の1位", false),
-    );
+    pair.append(runnerCard(runner, steals.is_leading ? "現在の1位" : "追う", true));
+    if (rival) {
+      pair.append(runnerCard(rival, steals.is_leading ? "2位" : "現在の1位", false));
+    }
     container.append(pair);
 
     const remaining = data.team?.remaining_games;
-    if (Number.isFinite(remaining)) {
+    if (Number.isFinite(remaining) && rival) {
       container.append(el("p", "pitcher-note",
-        `ヤクルトの残り試合は${remaining}試合。${chaser.name}選手の成功率${chaser.success_rate}は${leader.name}選手の${leader.success_rate}を上回っています。`));
+        `ヤクルトの残り試合は${remaining}試合。${runner.name}選手の成功率${runner.success_rate}、${rival.name}選手は${rival.success_rate}です。`));
     }
     container.append(el("p", "pitcher-note",
-      "※1位の選手も盗塁を重ねるため、必要な数は日々変わります。"));
+      steals.is_leading
+        ? "※相手も盗塁を重ねるため、差は日々変わります。"
+        : "※1位の選手も盗塁を重ねるため、必要な数は日々変わります。"));
   }
 
   const basis = dataBasisLabel(data.source?.last_modified);

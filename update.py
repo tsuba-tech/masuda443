@@ -161,25 +161,31 @@ def parse_steal_row(row: dict) -> dict:
 
 
 def parse_steals(html: str) -> dict:
-    """Return the stolen-base leader and the runner we track, from one table.
+    """Return the runner we follow and the best other player in the ranking.
 
-    盗塁王は相手のいる争いなので、固定の目標値ではなく 1 位との差で追う。
+    盗塁王は相手のいる争いなので、固定の目標値ではなく相手との差で追う。
+    本人が 1 位に立つこともあるため、比較相手は「自分以外で最上位の選手」
+    とする。同数で並んだ場合も取りこぼさない。
     """
     soup = BeautifulSoup(html, "html.parser")
     table = find_rank_table(soup, ["選手", "球団", "盗塁"])
-    rows = rows_as_dicts(table)
+    rows = [row for row, _ in rows_as_dicts(table)]
     if not rows:
         raise UpdateError("the stolen-base ranking contained no players")
-    leader = parse_steal_row(rows[0][0])
     wanted = normalize(TRACKED_RUNNER)
-    chaser = next(
-        (parse_steal_row(row) for row, _ in rows
-         if normalize(pick(row, "選手名", "選手")) == wanted),
-        None,
+    runner_row = next(
+        (row for row in rows if normalize(pick(row, "選手名", "選手")) == wanted), None
     )
-    if chaser is None:
+    if runner_row is None:
         raise UpdateError(f"{TRACKED_RUNNER} was not found in the stolen-base ranking")
-    return {"leader": leader, "chaser": chaser}
+    rival_row = next(
+        (row for row in rows if normalize(pick(row, "選手名", "選手")) != wanted), None
+    )
+    return {
+        "runner": parse_steal_row(runner_row),
+        "rival": parse_steal_row(rival_row) if rival_row is not None else None,
+        "top_steals": as_int(pick(rows[0], "盗塁"), "top steals"),
+    }
 
 
 def parse_last_modified(raw: str | None) -> datetime | None:
@@ -278,11 +284,26 @@ def pick(row: dict[str, str], *names: str) -> str:
     raise UpdateError(f"none of the columns exist: {', '.join(names)}")
 
 
-def parse_masuda(html: str) -> tuple[dict, str]:
+def parse_masuda(html: str) -> tuple[dict, str] | None:
+    """Find Masuda in a batting table, or return None if he is not on this page.
+
+    規定打席に到達すると掲載ページが「非規定」から「規定到達」へ移る。
+    どちらに載っていても拾えるよう、見つからない場合は例外にせず None を返す。
+    """
     soup = BeautifulSoup(html, "html.parser")
-    table = find_rank_table(soup, ["選手", "打率", "試合", "打席", "打数", "安打"])
+    # 規定到達ページは「選手名」、非規定ページは「選手」と列名が違う
+    stats = ["打率", "試合", "打席", "打数", "安打"]
+    table = None
+    for name_column in ("選手名", "選手"):
+        try:
+            table = find_rank_table(soup, [name_column, *stats])
+            break
+        except UpdateError:
+            continue
+    if table is None:
+        return None
     for row, element in rows_as_dicts(table):
-        if normalize(pick(row, "選手")) != PLAYER_NAME:
+        if normalize(pick(row, "選手名", "選手")) != PLAYER_NAME:
             continue
         player_link = element.select_one("td.player-col a, a[href*='playerB/']")
         if not player_link or not player_link.get("href"):
@@ -316,7 +337,7 @@ def parse_masuda(html: str) -> tuple[dict, str]:
             "ops": as_float(pick(row, "OPS"), "Masuda OPS"),
         }
         return masuda, urljoin(BASE_URL, player_link["href"])
-    raise UpdateError("増田珠 was not found in the non-qualified rankings")
+    return None
 
 
 def parse_leader(html: str) -> dict:
@@ -446,10 +467,24 @@ def parse_recent_games(html: str) -> list[GameLine]:
     return games
 
 
-def fetch_masuda_stats(session: requests.Session) -> tuple[dict, str, datetime | None]:
-    """Fetch the season line and return it with the player URL and the source's update time."""
+def fetch_masuda_stats(
+    session: requests.Session, qualified_page: FetchedPage | None = None
+) -> tuple[dict, str, datetime | None]:
+    """Fetch Masuda's season line from whichever ranking page currently lists him.
+
+    規定打席に到達すると「非規定」ページから消えて「規定到達」ページに移るため、
+    すでに取得済みの規定到達ページを先に調べ、無ければ非規定ページを取りに行く。
+    """
+    if qualified_page is not None:
+        found = parse_masuda(qualified_page.text)
+        if found:
+            masuda, player_url = found
+            return masuda, player_url, qualified_page.last_modified
     page = fetch(session, MASUDA_URL)
-    masuda, player_url = parse_masuda(page.text)
+    found = parse_masuda(page.text)
+    if not found:
+        raise UpdateError("増田珠 was not found in either batting ranking")
+    masuda, player_url = found
     return masuda, player_url, page.last_modified
 
 
@@ -606,10 +641,15 @@ def build_payload(
         "steals": (
             {
                 **steals,
-                # 並ぶのに必要な数と、単独で上回るのに必要な数を分けて出す
-                "gap": steals["leader"]["steals"] - steals["chaser"]["steals"],
-                "to_lead": max(steals["leader"]["steals"] - steals["chaser"]["steals"] + 1, 0),
-                "is_leading": steals["chaser"]["steals"] >= steals["leader"]["steals"],
+                # 追う側なら「並ぶまで」「上回るまで」、首位側なら2位との差を出す
+                "gap": (steals["rival"]["steals"] - steals["runner"]["steals"]
+                        if steals["rival"] else 0),
+                "to_lead": (max(steals["rival"]["steals"] - steals["runner"]["steals"] + 1, 0)
+                            if steals["rival"] else 0),
+                "is_leading": steals["runner"]["steals"] >= steals["top_steals"],
+                "is_shared_lead": (steals["rival"] is not None
+                                   and steals["runner"]["steals"] == steals["rival"]["steals"]
+                                   and steals["runner"]["steals"] >= steals["top_steals"]),
             }
             if steals else None
         ),
@@ -732,9 +772,10 @@ def main() -> None:
         # Only the required data pages are fetched; this script never crawls the site.
         robots = load_robots(session)
         assert_robots_allowed(robots, [MASUDA_URL, LEADER_URL, TEAM_STANDINGS_URL, PITCHER_URL, STEAL_URL])
-        masuda, player_url, masuda_modified = fetch_masuda_stats(session)
+        leader_page = fetch(session, LEADER_URL)
+        leader, leader_modified = parse_leader(leader_page.text), leader_page.last_modified
+        masuda, player_url, masuda_modified = fetch_masuda_stats(session, leader_page)
         assert_robots_allowed(robots, [player_url.replace(".html", "S.html")])
-        leader, leader_modified = fetch_leader_stats(session)
         pitcher_page = fetch(session, PITCHER_URL)
         pitchers = parse_pitchers(pitcher_page.text)
         steal_page = fetch(session, STEAL_URL)
