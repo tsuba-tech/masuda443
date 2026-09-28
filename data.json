@@ -1,19 +1,19 @@
 {
-  "updated": "2026-09-27T15:37:50+09:00",
+  "updated": "2026-09-28T09:54:06+09:00",
   "source_status": "ok",
-  "last_successful_fetch": "2026-09-27T15:37:50+09:00",
+  "last_successful_fetch": "2026-09-28T09:54:06+09:00",
   "target_pa": 443,
   "team": {
     "name": "東京ヤクルトスワローズ",
     "season_games": 143,
-    "games_played": 137,
-    "remaining_games": 6,
-    "current_regulation_pa": 425
+    "games_played": 138,
+    "remaining_games": 5,
+    "current_regulation_pa": 428
   },
   "source": {
     "site": "baseballdata.jp",
     "site_name": "データで楽しむプロ野球",
-    "last_modified": "2026-09-27T13:02:15+09:00",
+    "last_modified": "2026-09-28T08:41:46+09:00",
     "stale": false,
     "masuda": "https://baseballdata.jp/cdrm.html",
     "leader": "https://baseballdata.jp/ctop.html",
@@ -24,22 +24,22 @@
   "masuda": {
     "name": "増田 珠",
     "team": "S",
-    "games": 118,
-    "pa": 428,
-    "ab": 388,
-    "hits": 112,
-    "doubles": 12,
+    "games": 119,
+    "pa": 432,
+    "ab": 391,
+    "hits": 113,
+    "doubles": 13,
     "triples": 0,
     "hr": 9,
     "rbi": 37,
-    "walks": 32,
+    "walks": 33,
     "hbp": 4,
     "strikeouts": 72,
     "stolen_bases": 4,
-    "avg": 0.28865979381443296,
-    "obp": 0.346,
-    "slg": 0.389,
-    "ops": 0.735
+    "avg": 0.289002557544757,
+    "obp": 0.347,
+    "slg": 0.391,
+    "ops": 0.739
   },
   "target_innings": 143,
   "average_race": {
@@ -65,9 +65,9 @@
         "rank": 3,
         "name": "増田 珠",
         "team": "ヤクルト",
-        "hits": 112,
-        "ab": 388,
-        "avg": 0.28865979381443296
+        "hits": 113,
+        "ab": 391,
+        "avg": 0.289002557544757
       },
       {
         "rank": 4,
@@ -82,8 +82,8 @@
         "name": "牧 秀悟",
         "team": "DeNA",
         "hits": 115,
-        "ab": 403,
-        "avg": 0.2853598014888337
+        "ab": 406,
+        "avg": 0.2832512315270936
       },
       {
         "rank": 6,
@@ -97,17 +97,17 @@
         "rank": 7,
         "name": "松本 剛",
         "team": "巨人",
-        "hits": 112,
-        "ab": 399,
-        "avg": 0.2807017543859649
+        "hits": 114,
+        "ab": 405,
+        "avg": 0.2814814814814815
       },
       {
         "rank": 8,
         "name": "度会 隆輝",
         "team": "DeNA",
         "hits": 125,
-        "ab": 455,
-        "avg": 0.27472527472527475
+        "ab": 458,
+        "avg": 0.27292576419213976
       },
       {
         "rank": 9,
@@ -121,9 +121,9 @@
         "rank": 10,
         "name": "泉口 友汰",
         "team": "巨人",
-        "hits": 117,
-        "ab": 438,
-        "avg": 0.2671232876712329
+        "hits": 118,
+        "ab": 440,
+        "avg": 0.2681818181818182
       },
       {
         "rank": 11,
@@ -145,25 +145,25 @@
         "rank": 13,
         "name": "岩田 幸宏",
         "team": "ヤクルト",
-        "hits": 106,
-        "ab": 409,
-        "avg": 0.2591687041564792
+        "hits": 107,
+        "ab": 412,
+        "avg": 0.25970873786407767
       },
       {
         "rank": 14,
         "name": "ダルベック",
         "team": "巨人",
         "hits": 124,
-        "ab": 485,
-        "avg": 0.2556701030927835
+        "ab": 487,
+        "avg": 0.2546201232032854
       },
       {
         "rank": 15,
         "name": "坂倉 将吾",
         "team": "広島",
-        "hits": 120,
-        "ab": 476,
-        "avg": 0.25210084033613445
+        "hits": 121,
+        "ab": 479,
+        "avg": 0.25260960334029225
       },
       {
         "rank": 16,
@@ -177,17 +177,17 @@
         "rank": 17,
         "name": "長岡 秀樹",
         "team": "ヤクルト",
-        "hits": 114,
-        "ab": 464,
-        "avg": 0.24568965517241378
+        "hits": 116,
+        "ab": 467,
+        "avg": 0.24839400428265523
       },
       {
         "rank": 18,
         "name": "菊池 涼介",
         "team": "広島",
-        "hits": 103,
-        "ab": 437,
-        "avg": 0.23569794050343248
+        "hits": 105,
+        "ab": 442,
+        "avg": 0.23755656108597284
       },
       {
         "rank": 19,
@@ -206,7 +206,7 @@
       "steals": 38,
       "attempts": 42,
       "success_rate": "90.48%",
-      "games": 123
+      "games": 124
     },
     "rival": {
       "name": "浦田 俊輔",
@@ -236,7 +236,7 @@
       "remaining_innings": 0,
       "remaining_innings_text": "0",
       "progress": 100,
-      "current_regulation_innings": 137
+      "current_regulation_innings": 138
     },
     {
       "name": "山野 太一",
@@ -251,7 +251,7 @@
       "remaining_innings": 0,
       "remaining_innings_text": "0",
       "progress": 100,
-      "current_regulation_innings": 137
+      "current_regulation_innings": 138
     }
   ],
   "leader": {
@@ -272,42 +272,42 @@
   "recent": {
     "last5": {
       "games": 5,
-      "ab": 20,
-      "hits": 8,
-      "doubles": 1,
-      "triples": 0,
-      "hr": 1,
-      "walks_hbp": 3,
-      "strikeouts": 7,
-      "avg": 0.4
-    },
-    "last10": {
-      "games": 10,
-      "ab": 40,
-      "hits": 11,
-      "doubles": 1,
+      "ab": 19,
+      "hits": 7,
+      "doubles": 2,
       "triples": 0,
       "hr": 1,
       "walks_hbp": 4,
-      "strikeouts": 9,
-      "avg": 0.275
+      "strikeouts": 6,
+      "avg": 0.3684210526315789
     },
-    "hit_streak": 5,
+    "last10": {
+      "games": 10,
+      "ab": 39,
+      "hits": 10,
+      "doubles": 2,
+      "triples": 0,
+      "hr": 1,
+      "walks_hbp": 5,
+      "strikeouts": 9,
+      "avg": 0.2564102564102564
+    },
+    "hit_streak": 6,
     "latest_game": {
-      "date": "09/26",
+      "date": "09/27",
       "hits": 1,
       "hr": 0,
       "multi_hit_3": false
     }
   },
   "derived": {
-    "remaining_pa": 15,
+    "remaining_pa": 11,
     "current_regulation_remaining_pa": 0,
-    "required_pa_per_game": 2.5,
-    "progress": 96.61399548532731,
-    "avg_gap": 0.02640869933625195,
-    "adjusted_avg": 0.27791563275434245,
-    "adjusted_gap": 0.03715286039634247,
-    "status": "god"
+    "required_pa_per_game": 2.2,
+    "progress": 97.51693002257336,
+    "avg_gap": 0.026065935605927903,
+    "adjusted_avg": 0.2810945273631841,
+    "adjusted_gap": 0.03397396578750084,
+    "status": "hot"
   }
 }
