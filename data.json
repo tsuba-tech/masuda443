@@ -1,19 +1,19 @@
 {
-  "updated": "2026-10-02T16:01:33+09:00",
+  "updated": "2026-10-03T10:14:25+09:00",
   "source_status": "ok",
-  "last_successful_fetch": "2026-10-02T16:01:33+09:00",
+  "last_successful_fetch": "2026-10-03T10:14:25+09:00",
   "target_pa": 443,
   "team": {
     "name": "東京ヤクルトスワローズ",
     "season_games": 143,
-    "games_played": 139,
-    "remaining_games": 4,
-    "current_regulation_pa": 431
+    "games_played": 140,
+    "remaining_games": 3,
+    "current_regulation_pa": 434
   },
   "source": {
     "site": "baseballdata.jp",
     "site_name": "データで楽しむプロ野球",
-    "last_modified": "2026-10-02T12:55:46+09:00",
+    "last_modified": "2026-10-03T08:11:03+09:00",
     "stale": false,
     "masuda": "https://baseballdata.jp/cdrm.html",
     "leader": "https://baseballdata.jp/ctop.html",
@@ -24,26 +24,26 @@
   "masuda": {
     "name": "増田 珠",
     "team": "S",
-    "games": 120,
-    "pa": 436,
-    "ab": 395,
-    "hits": 115,
+    "games": 121,
+    "pa": 440,
+    "ab": 399,
+    "hits": 116,
     "doubles": 13,
     "triples": 0,
     "hr": 9,
-    "rbi": 37,
+    "rbi": 38,
     "walks": 33,
     "hbp": 4,
-    "strikeouts": 72,
+    "strikeouts": 73,
     "stolen_bases": 4,
-    "avg": 0.2911392405063291,
-    "obp": 0.349,
-    "slg": 0.392,
-    "ops": 0.741
+    "avg": 0.2907268170426065,
+    "obp": 0.348,
+    "slg": 0.391,
+    "ops": 0.739
   },
   "target_innings": 143,
   "average_race": {
-    "rank": 3,
+    "rank": 4,
     "board": [
       {
         "rank": 1,
@@ -63,19 +63,19 @@
       },
       {
         "rank": 3,
-        "name": "増田 珠",
-        "team": "ヤクルト",
-        "hits": 115,
-        "ab": 395,
-        "avg": 0.2911392405063291
-      },
-      {
-        "rank": 4,
         "name": "中野 拓夢",
         "team": "阪神",
         "hits": 144,
         "ab": 495,
         "avg": 0.2909090909090909
+      },
+      {
+        "rank": 4,
+        "name": "増田 珠",
+        "team": "ヤクルト",
+        "hits": 116,
+        "ab": 399,
+        "avg": 0.2907268170426065
       },
       {
         "rank": 5,
@@ -98,8 +98,8 @@
         "name": "松本 剛",
         "team": "巨人",
         "hits": 115,
-        "ab": 415,
-        "avg": 0.27710843373493976
+        "ab": 419,
+        "avg": 0.2744630071599045
       },
       {
         "rank": 8,
@@ -122,8 +122,8 @@
         "name": "泉口 友汰",
         "team": "巨人",
         "hits": 118,
-        "ab": 447,
-        "avg": 0.2639821029082774
+        "ab": 450,
+        "avg": 0.26222222222222225
       },
       {
         "rank": 11,
@@ -135,19 +135,19 @@
       },
       {
         "rank": 12,
-        "name": "岩田 幸宏",
-        "team": "ヤクルト",
-        "hits": 107,
-        "ab": 412,
-        "avg": 0.25970873786407767
-      },
-      {
-        "rank": 13,
         "name": "村松 開人",
         "team": "中日",
         "hits": 115,
         "ab": 444,
         "avg": 0.25900900900900903
+      },
+      {
+        "rank": 13,
+        "name": "岩田 幸宏",
+        "team": "ヤクルト",
+        "hits": 107,
+        "ab": 415,
+        "avg": 0.25783132530120484
       },
       {
         "rank": 14,
@@ -177,9 +177,9 @@
         "rank": 17,
         "name": "長岡 秀樹",
         "team": "ヤクルト",
-        "hits": 116,
-        "ab": 467,
-        "avg": 0.24839400428265523
+        "hits": 117,
+        "ab": 472,
+        "avg": 0.2478813559322034
       },
       {
         "rank": 18,
@@ -206,7 +206,7 @@
       "steals": 38,
       "attempts": 42,
       "success_rate": "90.48%",
-      "games": 124
+      "games": 125
     },
     "rival": {
       "name": "浦田 俊輔",
@@ -236,22 +236,22 @@
       "remaining_innings": 0,
       "remaining_innings_text": "0",
       "progress": 100,
-      "current_regulation_innings": 139
+      "current_regulation_innings": 140
     },
     {
       "name": "山野 太一",
       "team": "ヤクルト",
-      "era": 2.38,
+      "era": 2.33,
       "wins": 12,
       "losses": 4,
-      "games": 24,
-      "strikeouts": 145,
-      "innings": 155.33333333333334,
-      "innings_text": "155 1/3",
+      "games": 25,
+      "strikeouts": 152,
+      "innings": 162.33333333333334,
+      "innings_text": "162 1/3",
       "remaining_innings": 0,
       "remaining_innings_text": "0",
       "progress": 100,
-      "current_regulation_innings": 139
+      "current_regulation_innings": 140
     }
   ],
   "leader": {
@@ -272,42 +272,42 @@
   "recent": {
     "last5": {
       "games": 5,
-      "ab": 17,
-      "hits": 7,
-      "doubles": 2,
+      "ab": 16,
+      "hits": 6,
+      "doubles": 1,
       "triples": 0,
       "hr": 0,
       "walks_hbp": 4,
-      "strikeouts": 3,
-      "avg": 0.4117647058823529
+      "strikeouts": 2,
+      "avg": 0.375
     },
     "last10": {
       "games": 10,
       "ab": 39,
-      "hits": 11,
+      "hits": 12,
       "doubles": 2,
       "triples": 0,
       "hr": 1,
       "walks_hbp": 5,
       "strikeouts": 8,
-      "avg": 0.28205128205128205
+      "avg": 0.3076923076923077
     },
-    "hit_streak": 7,
+    "hit_streak": 8,
     "latest_game": {
-      "date": "09/30",
-      "hits": 2,
+      "date": "10/02",
+      "hits": 1,
       "hr": 0,
       "multi_hit_3": false
     }
   },
   "derived": {
-    "remaining_pa": 7,
+    "remaining_pa": 3,
     "current_regulation_remaining_pa": 0,
-    "required_pa_per_game": 1.75,
-    "progress": 98.41986455981942,
-    "avg_gap": 0.022926270090973366,
-    "adjusted_avg": 0.2860696517412935,
-    "adjusted_gap": 0.02799585885600897,
-    "status": "god"
+    "required_pa_per_game": 1.0,
+    "progress": 99.32279909706546,
+    "avg_gap": 0.023338693554695977,
+    "adjusted_avg": 0.2885572139303483,
+    "adjusted_gap": 0.0255082966669542,
+    "status": "hot"
   }
 }
