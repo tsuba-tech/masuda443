@@ -1,7 +1,7 @@
 {
-  "updated": "2026-10-03T10:14:25+09:00",
+  "updated": "2026-10-03T15:34:43+09:00",
   "source_status": "ok",
-  "last_successful_fetch": "2026-10-03T10:14:25+09:00",
+  "last_successful_fetch": "2026-10-03T15:34:43+09:00",
   "target_pa": 443,
   "team": {
     "name": "東京ヤクルトスワローズ",
@@ -13,7 +13,7 @@
   "source": {
     "site": "baseballdata.jp",
     "site_name": "データで楽しむプロ野球",
-    "last_modified": "2026-10-03T08:11:03+09:00",
+    "last_modified": "2026-10-03T10:50:03+09:00",
     "stale": false,
     "masuda": "https://baseballdata.jp/cdrm.html",
     "leader": "https://baseballdata.jp/ctop.html",
