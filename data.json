@@ -1,19 +1,19 @@
 {
-  "updated": "2026-10-03T15:34:43+09:00",
+  "updated": "2026-10-04T09:46:31+09:00",
   "source_status": "ok",
-  "last_successful_fetch": "2026-10-03T15:34:43+09:00",
+  "last_successful_fetch": "2026-10-04T09:46:31+09:00",
   "target_pa": 443,
   "team": {
     "name": "東京ヤクルトスワローズ",
     "season_games": 143,
-    "games_played": 140,
-    "remaining_games": 3,
-    "current_regulation_pa": 434
+    "games_played": 141,
+    "remaining_games": 2,
+    "current_regulation_pa": 437
   },
   "source": {
     "site": "baseballdata.jp",
     "site_name": "データで楽しむプロ野球",
-    "last_modified": "2026-10-03T10:50:03+09:00",
+    "last_modified": "2026-10-03T22:19:17+09:00",
     "stale": false,
     "masuda": "https://baseballdata.jp/cdrm.html",
     "leader": "https://baseballdata.jp/ctop.html",
@@ -24,74 +24,74 @@
   "masuda": {
     "name": "増田 珠",
     "team": "S",
-    "games": 121,
-    "pa": 440,
-    "ab": 399,
-    "hits": 116,
+    "games": 122,
+    "pa": 444,
+    "ab": 403,
+    "hits": 118,
     "doubles": 13,
     "triples": 0,
     "hr": 9,
-    "rbi": 38,
+    "rbi": 39,
     "walks": 33,
     "hbp": 4,
-    "strikeouts": 73,
+    "strikeouts": 74,
     "stolen_bases": 4,
-    "avg": 0.2907268170426065,
-    "obp": 0.348,
-    "slg": 0.391,
-    "ops": 0.739
+    "avg": 0.29280397022332505,
+    "obp": 0.349,
+    "slg": 0.392,
+    "ops": 0.741
   },
   "target_innings": 143,
   "average_race": {
-    "rank": 4,
+    "rank": 3,
     "board": [
       {
         "rank": 1,
         "name": "佐藤 輝明",
         "team": "阪神",
-        "hits": 163,
-        "ab": 519,
-        "avg": 0.3140655105973025
+        "hits": 164,
+        "ab": 523,
+        "avg": 0.3135755258126195
       },
       {
         "rank": 2,
         "name": "森下 翔太",
         "team": "阪神",
         "hits": 151,
-        "ab": 510,
-        "avg": 0.296078431372549
+        "ab": 514,
+        "avg": 0.29377431906614787
       },
       {
         "rank": 3,
-        "name": "中野 拓夢",
-        "team": "阪神",
-        "hits": 144,
-        "ab": 495,
-        "avg": 0.2909090909090909
+        "name": "増田 珠",
+        "team": "ヤクルト",
+        "hits": 118,
+        "ab": 403,
+        "avg": 0.29280397022332505
       },
       {
         "rank": 4,
-        "name": "増田 珠",
-        "team": "ヤクルト",
-        "hits": 116,
-        "ab": 399,
-        "avg": 0.2907268170426065
+        "name": "中野 拓夢",
+        "team": "阪神",
+        "hits": 146,
+        "ab": 499,
+        "avg": 0.2925851703406814
       },
       {
         "rank": 5,
         "name": "大山 悠輔",
         "team": "阪神",
         "hits": 140,
-        "ab": 495,
-        "avg": 0.2828282828282828
+        "ab": 499,
+        "avg": 0.280561122244489
       },
       {
         "rank": 6,
         "name": "牧 秀悟",
         "team": "DeNA",
-        "hits": 115,
-        "ab": 411,
-        "avg": 0.2798053527980535
+        "hits": 116,
+        "ab": 414,
+        "avg": 0.28019323671497587
       },
       {
         "rank": 7,
@@ -105,9 +105,9 @@
         "rank": 8,
         "name": "度会 隆輝",
         "team": "DeNA",
-        "hits": 126,
-        "ab": 463,
-        "avg": 0.27213822894168466
+        "hits": 128,
+        "ab": 467,
+        "avg": 0.2740899357601713
       },
       {
         "rank": 9,
@@ -121,44 +121,52 @@
         "rank": 10,
         "name": "泉口 友汰",
         "team": "巨人",
-        "hits": 118,
-        "ab": 450,
-        "avg": 0.26222222222222225
+        "hits": 120,
+        "ab": 454,
+        "avg": 0.2643171806167401
       },
       {
         "rank": 11,
         "name": "佐野 恵太",
         "team": "DeNA",
-        "hits": 121,
-        "ab": 462,
-        "avg": 0.2619047619047619
+        "hits": 122,
+        "ab": 464,
+        "avg": 0.2629310344827586
       },
       {
         "rank": 12,
         "name": "村松 開人",
         "team": "中日",
         "hits": 115,
-        "ab": 444,
-        "avg": 0.25900900900900903
+        "ab": 446,
+        "avg": 0.257847533632287
       },
       {
         "rank": 13,
         "name": "岩田 幸宏",
         "team": "ヤクルト",
         "hits": 107,
-        "ab": 415,
-        "avg": 0.25783132530120484
+        "ab": 418,
+        "avg": 0.25598086124401914
       },
       {
         "rank": 14,
         "name": "ダルベック",
         "team": "巨人",
         "hits": 124,
-        "ab": 491,
-        "avg": 0.2525458248472505
+        "ab": 492,
+        "avg": 0.25203252032520324
       },
       {
         "rank": 15,
+        "name": "坂倉 将吾",
+        "team": "広島",
+        "hits": 124,
+        "ab": 493,
+        "avg": 0.2515212981744422
+      },
+      {
+        "rank": 16,
         "name": "サンタナ",
         "team": "ヤクルト",
         "hits": 95,
@@ -166,36 +174,28 @@
         "avg": 0.25132275132275134
       },
       {
-        "rank": 16,
-        "name": "坂倉 将吾",
-        "team": "広島",
-        "hits": 122,
-        "ab": 490,
-        "avg": 0.24897959183673468
-      },
-      {
         "rank": 17,
         "name": "長岡 秀樹",
         "team": "ヤクルト",
-        "hits": 117,
-        "ab": 472,
-        "avg": 0.2478813559322034
+        "hits": 119,
+        "ab": 476,
+        "avg": 0.25
       },
       {
         "rank": 18,
         "name": "菊池 涼介",
         "team": "広島",
-        "hits": 107,
-        "ab": 451,
-        "avg": 0.23725055432372505
+        "hits": 108,
+        "ab": 456,
+        "avg": 0.23684210526315788
       },
       {
         "rank": 19,
         "name": "細川 成也",
         "team": "中日",
         "hits": 113,
-        "ab": 495,
-        "avg": 0.22828282828282828
+        "ab": 499,
+        "avg": 0.22645290581162325
       }
     ]
   },
@@ -206,7 +206,7 @@
       "steals": 38,
       "attempts": 42,
       "success_rate": "90.48%",
-      "games": 125
+      "games": 126
     },
     "rival": {
       "name": "浦田 俊輔",
@@ -236,7 +236,7 @@
       "remaining_innings": 0,
       "remaining_innings_text": "0",
       "progress": 100,
-      "current_regulation_innings": 140
+      "current_regulation_innings": 141
     },
     {
       "name": "山野 太一",
@@ -251,23 +251,23 @@
       "remaining_innings": 0,
       "remaining_innings_text": "0",
       "progress": 100,
-      "current_regulation_innings": 140
+      "current_regulation_innings": 141
     }
   ],
   "leader": {
     "name": "佐藤 輝明",
     "team": "阪神",
-    "games": 138,
-    "pa": 594,
-    "ab": 519,
-    "hits": 163,
-    "avg": 0.3140655105973025,
+    "games": 139,
+    "pa": 598,
+    "ab": 523,
+    "hits": 164,
+    "avg": 0.3135755258126195,
     "recent5_avg": 0.316,
-    "obp": 0.392,
-    "slg": 0.622,
-    "ops": 1.015,
-    "team_games_played": 138,
-    "team_remaining_games": 5
+    "obp": 0.391,
+    "slg": 0.625,
+    "ops": 1.017,
+    "team_games_played": 139,
+    "team_remaining_games": 4
   },
   "recent": {
     "last5": {
@@ -301,13 +301,13 @@
     }
   },
   "derived": {
-    "remaining_pa": 3,
+    "remaining_pa": 0,
     "current_regulation_remaining_pa": 0,
-    "required_pa_per_game": 1.0,
-    "progress": 99.32279909706546,
-    "avg_gap": 0.023338693554695977,
-    "adjusted_avg": 0.2885572139303483,
-    "adjusted_gap": 0.0255082966669542,
+    "required_pa_per_game": 0.0,
+    "progress": 100,
+    "avg_gap": 0.020771555589294444,
+    "adjusted_avg": 0.29280397022332505,
+    "adjusted_gap": 0.020771555589294444,
     "status": "hot"
   }
 }
