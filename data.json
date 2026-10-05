@@ -1,7 +1,7 @@
 {
-  "updated": "2026-10-05T10:02:33+09:00",
+  "updated": "2026-10-05T11:51:37+09:00",
   "source_status": "ok",
-  "last_successful_fetch": "2026-10-05T10:02:33+09:00",
+  "last_successful_fetch": "2026-10-05T11:51:37+09:00",
   "target_pa": 443,
   "team": {
     "name": "東京ヤクルトスワローズ",
@@ -19,7 +19,8 @@
     "leader": "https://baseballdata.jp/ctop.html",
     "team_standings": "https://baseballdata.jp/c/",
     "pitchers": "https://baseballdata.jp/cptop.html",
-    "steals": "https://baseballdata.jp/cst.html"
+    "steals": "https://baseballdata.jp/cst.html",
+    "masuda_last_modified": "2026-10-03T22:18:04+09:00"
   },
   "masuda": {
     "name": "増田 珠",

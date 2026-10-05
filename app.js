@@ -61,7 +61,7 @@ function mergeLiveOverlay(data, live) {
   const totals = live?.totals;
   if (!live?.date || !totals?.pa) return { data, live: null };
   // 確定データが既にその日を含んでいるなら速報は用済み
-  const basis = confirmedBasisDate(data.source?.last_modified);
+  const basis = confirmedBasisDate(data.source?.masuda_last_modified || data.source?.last_modified);
   if (basis && basis >= live.date) return { data, live: null };
 
   const merged = structuredClone(data);
@@ -279,6 +279,11 @@ function compareMasudaBlock(need, projectedAB) {
  * メインの数字にも speculation が乗っているため、暫定である旨を必ず添える。
  * @param {?object} live
  */
+function liveDateLabel(live, now = new Date()) {
+  const today = new Intl.DateTimeFormat("sv-SE", { timeZone: "Asia/Tokyo" }).format(now);
+  return live.date === today ? "本日" : live.date.slice(5).replace("-", "/");
+}
+
 function renderLivePanel(live) {
   const section = $("#live-strip");
   if (!section) return;
@@ -287,6 +292,8 @@ function renderLivePanel(live) {
     return;
   }
   section.hidden = false;
+  const dateLabel = liveDateLabel(live);
+  setText("#live-title", dateLabel === "本日" ? "本日の速報" : `${dateLabel}の速報・確定反映待ち`);
   const { pa, ab, hits, hr } = live.totals;
   setText("#live-line", `${pa}打席 ${ab}打数 ${hits}安打${hr ? ` ${hr}本塁打` : ""}`);
   // 試合名は任意。入力が無くても文脈がわかるよう、日付は常に自分で出す。
@@ -528,16 +535,17 @@ function render(data, live = null) {
 
   // 取得元の更新時刻と、当サイトが取りに行った時刻は別物なので分けて出す。
   // これを混同すると「更新済みなのに今日の試合が無い」と誤解される。
-  const sourceModified = data.source?.last_modified ? new Date(data.source.last_modified) : null;
+  const masudaModified = data.source?.masuda_last_modified || data.source?.last_modified;
+  const sourceModified = masudaModified ? new Date(masudaModified) : null;
   const sourceLabel = sourceModified ? formatTimestamp(sourceModified) : "取得元の更新時刻は不明";
   setText("#source-updated-at-foot", sourceLabel);
   const basisNode = $("#data-basis");
-  const basisLabel = dataBasisLabel(data.source?.last_modified);
+  const basisLabel = dataBasisLabel(masudaModified);
   if (live) {
     basisNode.hidden = false;
     basisNode.textContent = basisLabel
-      ? `${basisLabel}終了時点の確定成績 ＋ 本日${live.totals.pa}打席（速報）`
-      : `本日${live.totals.pa}打席の速報を含む`;
+      ? `${basisLabel}終了時点の確定成績 ＋ ${liveDateLabel(live)}の${live.totals.pa}打席（速報・確定反映待ち）`
+      : `${liveDateLabel(live)}の${live.totals.pa}打席の速報を含む（確定反映待ち）`;
   } else {
     basisNode.hidden = !basisLabel;
     basisNode.textContent = basisLabel ? `${basisLabel}終了時点の成績` : "";

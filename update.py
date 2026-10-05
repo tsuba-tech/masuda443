@@ -844,6 +844,9 @@ def main() -> None:
             leader_team_games_played, source_last_modified, pitchers, steals,
             average_board,
         )
+        payload["source"]["masuda_last_modified"] = (
+            masuda_modified.isoformat(timespec="seconds") if masuda_modified else None
+        )
         if payload["source"]["stale"]:
             # 取得は成功しているので更新自体は止めない。気づけるように警告だけ残す。
             LOG.warning("source has not changed for over %s hours (last modified %s); "
@@ -851,7 +854,7 @@ def main() -> None:
                         SOURCE_STALE_HOURS, source_last_modified)
             print(f"::warning::source data appears stale (last modified {source_last_modified})")
         atomic_write(payload)
-        basis_date = confirmed_basis_date(source_last_modified)
+        basis_date = confirmed_basis_date(masuda_modified)
         if basis_date and clear_live_overlay_if_covered(basis_date):
             LOG.info("cleared the manual live overlay; confirmed data now covers %s", basis_date)
         atomic_write({
