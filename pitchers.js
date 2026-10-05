@@ -85,6 +85,9 @@ function pitcherCard(pitcher, target) {
   card.append(head);
 
   const reached = pitcher.remaining_innings <= 0;
+  if (reached) {
+    card.append(el("p", "achievement-message", `${pitcher.name.replace(/\s+/g, "")}投手、規定投球回到達おめでとうございます！`));
+  }
   const counter = el("div", "pitcher-counter");
   if (reached) {
     counter.append(el("strong", "pitcher-reached", "規定投球回 到達"));
@@ -160,10 +163,8 @@ function setTextIfPresent(selector, value) {
 
 /** ハッシュに合わせてタブの現在地を移す。 */
 function highlightTab() {
-  const hash = location.hash.replace("#", "");
   document.querySelectorAll(".counter-tabs a").forEach((tab) => {
-    const isCurrent = tab.getAttribute("href") === `#${hash}`
-      || (!hash && tab.getAttribute("href") === "#okugawa");
+    const isCurrent = tab.getAttribute("href") === "pitchers.html";
     tab.classList.toggle("is-current", isCurrent);
     if (isCurrent) {
       tab.setAttribute("aria-current", "page");

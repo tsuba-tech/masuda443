@@ -116,8 +116,8 @@ function setText(selector, value) {
 
 function specialMessage(data) {
   const { masuda, leader, recent, derived } = data;
+  if (derived.remaining_pa === 0) return "増田珠選手、規定打席到達おめでとうございます！これからも応燕します！";
   if (masuda.avg >= leader.avg) return "首位。増田珠選手。";
-  if (derived.remaining_pa === 0) return "到達。増田珠選手、規定打席。";
   if (derived.remaining_pa <= 5) return "あと少し。歴史の扉が開く。";
   if (derived.remaining_pa <= 10) return `規定打席443まで、あと${derived.remaining_pa}打席。`;
   if (recent.latest_game?.multi_hit_3) return "猛打賞。打てば道は開かれる。";
@@ -468,6 +468,8 @@ function renderQualificationOutlook(data) {
 }
 
 function render(data, live = null) {
+  const celebration = $("#masuda-celebration");
+  if (celebration) celebration.hidden = data.masuda.pa < data.target_pa;
   currentData = data;
   currentLive = live;
   const { masuda, leader, recent, derived, target_pa: target } = data;
