@@ -1,7 +1,7 @@
 {
-  "updated": "2026-10-05T16:04:50+09:00",
+  "updated": "2026-10-06T11:21:02+09:00",
   "source_status": "ok",
-  "last_successful_fetch": "2026-10-05T16:04:50+09:00",
+  "last_successful_fetch": "2026-10-06T11:21:02+09:00",
   "target_pa": 443,
   "team": {
     "name": "東京ヤクルトスワローズ",
@@ -13,14 +13,14 @@
   "source": {
     "site": "baseballdata.jp",
     "site_name": "データで楽しむプロ野球",
-    "last_modified": "2026-10-03T22:19:17+09:00",
+    "last_modified": "2026-10-06T08:40:26+09:00",
     "stale": false,
     "masuda": "https://baseballdata.jp/cdrm.html",
     "leader": "https://baseballdata.jp/ctop.html",
     "team_standings": "https://baseballdata.jp/c/",
     "pitchers": "https://baseballdata.jp/cptop.html",
     "steals": "https://baseballdata.jp/cst.html",
-    "masuda_last_modified": "2026-10-03T22:18:04+09:00"
+    "masuda_last_modified": "2026-10-06T08:39:19+09:00"
   },
   "masuda": {
     "name": "増田 珠",
@@ -273,30 +273,30 @@
   "recent": {
     "last5": {
       "games": 5,
-      "ab": 16,
-      "hits": 6,
+      "ab": 18,
+      "hits": 7,
       "doubles": 1,
       "triples": 0,
       "hr": 0,
-      "walks_hbp": 4,
-      "strikeouts": 2,
-      "avg": 0.375
+      "walks_hbp": 2,
+      "strikeouts": 3,
+      "avg": 0.3888888888888889
     },
     "last10": {
       "games": 10,
-      "ab": 39,
-      "hits": 12,
+      "ab": 38,
+      "hits": 14,
       "doubles": 2,
       "triples": 0,
       "hr": 1,
       "walks_hbp": 5,
-      "strikeouts": 8,
-      "avg": 0.3076923076923077
+      "strikeouts": 9,
+      "avg": 0.3684210526315789
     },
-    "hit_streak": 8,
+    "hit_streak": 9,
     "latest_game": {
-      "date": "10/02",
-      "hits": 1,
+      "date": "10/03",
+      "hits": 2,
       "hr": 0,
       "multi_hit_3": false
     }
