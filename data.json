@@ -1,26 +1,26 @@
 {
-  "updated": "2026-10-08T16:26:51+09:00",
+  "updated": "2026-10-09T11:17:31+09:00",
   "source_status": "ok",
-  "last_successful_fetch": "2026-10-08T16:26:51+09:00",
+  "last_successful_fetch": "2026-10-09T11:17:31+09:00",
   "target_pa": 443,
   "team": {
     "name": "東京ヤクルトスワローズ",
     "season_games": 143,
-    "games_played": 142,
-    "remaining_games": 1,
-    "current_regulation_pa": 440
+    "games_played": 143,
+    "remaining_games": 0,
+    "current_regulation_pa": 443
   },
   "source": {
     "site": "baseballdata.jp",
     "site_name": "データで楽しむプロ野球",
-    "last_modified": "2026-10-08T11:09:10+09:00",
+    "last_modified": "2026-10-09T10:22:46+09:00",
     "stale": false,
     "masuda": "https://baseballdata.jp/cdrm.html",
     "leader": "https://baseballdata.jp/ctop.html",
     "team_standings": "https://baseballdata.jp/c/",
     "pitchers": "https://baseballdata.jp/cptop.html",
     "steals": "https://baseballdata.jp/cst.html",
-    "masuda_last_modified": "2026-10-08T08:20:23+09:00"
+    "masuda_last_modified": "2026-10-09T07:44:30+09:00"
   },
   "masuda": {
     "name": "増田 珠",
@@ -51,8 +51,8 @@
         "name": "佐藤 輝明",
         "team": "阪神",
         "hits": 165,
-        "ab": 535,
-        "avg": 0.308411214953271
+        "ab": 539,
+        "avg": 0.30612244897959184
       },
       {
         "rank": 2,
@@ -67,24 +67,24 @@
         "name": "森下 翔太",
         "team": "阪神",
         "hits": 152,
-        "ab": 520,
-        "avg": 0.2923076923076923
+        "ab": 521,
+        "avg": 0.29174664107485604
       },
       {
         "rank": 4,
         "name": "中野 拓夢",
         "team": "阪神",
         "hits": 146,
-        "ab": 507,
-        "avg": 0.2879684418145957
+        "ab": 508,
+        "avg": 0.2874015748031496
       },
       {
         "rank": 5,
         "name": "大山 悠輔",
         "team": "阪神",
-        "hits": 145,
-        "ab": 510,
-        "avg": 0.28431372549019607
+        "hits": 146,
+        "ab": 512,
+        "avg": 0.28515625
       },
       {
         "rank": 6,
@@ -146,9 +146,9 @@
         "rank": 13,
         "name": "岩田 幸宏",
         "team": "ヤクルト",
-        "hits": 107,
-        "ab": 418,
-        "avg": 0.25598086124401914
+        "hits": 108,
+        "ab": 422,
+        "avg": 0.2559241706161137
       },
       {
         "rank": 14,
@@ -179,8 +179,8 @@
         "name": "長岡 秀樹",
         "team": "ヤクルト",
         "hits": 119,
-        "ab": 477,
-        "avg": 0.24947589098532494
+        "ab": 480,
+        "avg": 0.24791666666666667
       },
       {
         "rank": 18,
@@ -204,10 +204,10 @@
     "runner": {
       "name": "岩田 幸宏",
       "team": "ヤクルト",
-      "steals": 38,
-      "attempts": 42,
-      "success_rate": "90.48%",
-      "games": 126
+      "steals": 39,
+      "attempts": 43,
+      "success_rate": "90.70%",
+      "games": 127
     },
     "rival": {
       "name": "浦田 俊輔",
@@ -217,8 +217,8 @@
       "success_rate": "87.80%",
       "games": 118
     },
-    "top_steals": 38,
-    "gap": -2,
+    "top_steals": 39,
+    "gap": -3,
     "to_lead": 0,
     "is_leading": true,
     "is_shared_lead": false
@@ -237,7 +237,7 @@
       "remaining_innings": 0,
       "remaining_innings_text": "0",
       "progress": 100,
-      "current_regulation_innings": 142
+      "current_regulation_innings": 143
     },
     {
       "name": "山野 太一",
@@ -252,23 +252,23 @@
       "remaining_innings": 0,
       "remaining_innings_text": "0",
       "progress": 100,
-      "current_regulation_innings": 142
+      "current_regulation_innings": 143
     }
   ],
   "leader": {
     "name": "佐藤 輝明",
     "team": "阪神",
-    "games": 142,
-    "pa": 610,
-    "ab": 535,
+    "games": 143,
+    "pa": 614,
+    "ab": 539,
     "hits": 165,
-    "avg": 0.308411214953271,
-    "recent5_avg": 0.136,
-    "obp": 0.385,
-    "slg": 0.613,
-    "ops": 0.998,
-    "team_games_played": 142,
-    "team_remaining_games": 1
+    "avg": 0.30612244897959184,
+    "recent5_avg": 0.1,
+    "obp": 0.383,
+    "slg": 0.609,
+    "ops": 0.991,
+    "team_games_played": 143,
+    "team_remaining_games": 0
   },
   "recent": {
     "last5": {
@@ -304,11 +304,11 @@
   "derived": {
     "remaining_pa": 0,
     "current_regulation_remaining_pa": 0,
-    "required_pa_per_game": 0.0,
+    "required_pa_per_game": null,
     "progress": 100,
-    "avg_gap": 0.015607244729945957,
+    "avg_gap": 0.013318478756266794,
     "adjusted_avg": 0.29280397022332505,
-    "adjusted_gap": 0.015607244729945957,
+    "adjusted_gap": 0.013318478756266794,
     "status": "god"
   }
 }
